@@ -10,7 +10,7 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-              🚀 Trusted by 1000+ families across Nigeria
+              🚀 Trusted by 1000+ families across Ghana
             </Badge>
             
             <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,10 +11,10 @@ const Navigation = () => {
     <nav className="bg-white/90 backdrop-blur-md border-b border-blue-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <BookOpen className="h-8 w-8 text-blue-600" />
             <span className="text-2xl font-bold text-gray-900">Sua</span>
-          </div>
+          </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
@@ -26,12 +27,16 @@ const Navigation = () => {
             <a href="#about" className="text-gray-700 hover:text-blue-600 transition-colors">
               About
             </a>
-            <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
-              Login
-            </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              Get Started
-            </Button>
+            <Link to="/login">
+              <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                Login
+              </Button>
+            </Link>
+            <Link to="/register">
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                Get Started
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -59,12 +64,16 @@ const Navigation = () => {
               About
             </a>
             <div className="flex flex-col space-y-2 pt-4">
-              <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
-                Login
-              </Button>
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                Get Started
-              </Button>
+              <Link to="/login">
+                <Button variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-50">
+                  Login
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </div>
         )}
