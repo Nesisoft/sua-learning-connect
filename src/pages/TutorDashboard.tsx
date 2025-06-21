@@ -3,10 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Calendar, CreditCard, Star, Clock, LogOut, Users, Settings } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import StudentProgressModal from "@/components/StudentProgressModal";
+import ScheduleLessonModal from "@/components/ScheduleLessonModal";
+import SendMessageModal from "@/components/SendMessageModal";
+import WithdrawalModal from "@/components/WithdrawalModal";
 
 const TutorDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [modalType, setModalType] = useState<string>("");
+  const [withdrawalType, setWithdrawalType] = useState<"bank" | "mobile">("bank");
+  const navigate = useNavigate();
 
   // Mock data
   const upcomingLessons = [
@@ -25,6 +33,24 @@ const TutorDashboard = () => {
     thisMonth: 1250,
     pending: 180,
     total: 8500
+  };
+
+  const openModal = (type: string, student?: any) => {
+    setSelectedStudent(student);
+    setModalType(type);
+  };
+
+  const closeModal = () => {
+    setModalType("");
+    setSelectedStudent(null);
+  };
+
+  const handleProfileClick = () => {
+    navigate('/tutor/profile');
+  };
+
+  const handleScheduleClick = () => {
+    navigate('/tutor/schedule');
   };
 
   return (
@@ -78,7 +104,7 @@ const TutorDashboard = () => {
             <Button
               variant={activeTab === "schedule" ? "default" : "ghost"}
               className="w-full justify-start"
-              onClick={() => setActiveTab("schedule")}
+              onClick={handleScheduleClick}
             >
               <Calendar className="h-4 w-4 mr-2" />
               Schedule
@@ -94,7 +120,7 @@ const TutorDashboard = () => {
             <Button
               variant={activeTab === "profile" ? "default" : "ghost"}
               className="w-full justify-start"
-              onClick={() => setActiveTab("profile")}
+              onClick={handleProfileClick}
             >
               <Settings className="h-4 w-4 mr-2" />
               Profile
@@ -233,9 +259,15 @@ const TutorDashboard = () => {
                       </CardHeader>
                       <CardContent>
                         <div className="flex gap-2">
-                          <Button size="sm">View Progress</Button>
-                          <Button size="sm" variant="outline">Schedule Lesson</Button>
-                          <Button size="sm" variant="outline">Send Message</Button>
+                          <Button size="sm" onClick={() => openModal('progress', student)}>
+                            View Progress
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => openModal('schedule', student)}>
+                            Schedule Lesson
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => openModal('message', student)}>
+                            Send Message
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -290,8 +322,18 @@ const TutorDashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex gap-4">
-                      <Button>Withdraw to Bank</Button>
-                      <Button variant="outline">Withdraw to Mobile Money</Button>
+                      <Button onClick={() => {
+                        setWithdrawalType('bank');
+                        openModal('withdrawal');
+                      }}>
+                        Withdraw to Bank
+                      </Button>
+                      <Button variant="outline" onClick={() => {
+                        setWithdrawalType('mobile');
+                        openModal('withdrawal');
+                      }}>
+                        Withdraw to Mobile Money
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -310,6 +352,40 @@ const TutorDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      {modalType === 'progress' && selectedStudent && (
+        <StudentProgressModal
+          isOpen={true}
+          onClose={closeModal}
+          student={selectedStudent}
+        />
+      )}
+
+      {modalType === 'schedule' && selectedStudent && (
+        <ScheduleLessonModal
+          isOpen={true}
+          onClose={closeModal}
+          student={selectedStudent}
+        />
+      )}
+
+      {modalType === 'message' && selectedStudent && (
+        <SendMessageModal
+          isOpen={true}
+          onClose={closeModal}
+          student={selectedStudent}
+        />
+      )}
+
+      {modalType === 'withdrawal' && (
+        <WithdrawalModal
+          isOpen={true}
+          onClose={closeModal}
+          type={withdrawalType}
+          availableBalance={earnings.thisMonth}
+        />
+      )}
     </div>
   );
 };
