@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,11 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Users, Calendar, CreditCard, Star, MapPin, LogOut, Plus, Search, Clock, Filter, DollarSign, CheckCircle, X } from "lucide-react";
+import { BookOpen, Users, Calendar, CreditCard, Star, MapPin, LogOut, Plus, Search, Clock, Filter, DollarSign, CheckCircle, X, Video } from "lucide-react";
 import { Link } from "react-router-dom";
 import StudentProgressModal from "@/components/StudentProgressModal";
 import RequestTutorModal from "@/components/RequestTutorModal";
 import AddChildModal from "@/components/AddChildModal";
+import RescheduleModal from "@/components/RescheduleModal";
+import JoinLessonModal from "@/components/JoinLessonModal";
+import PaymentModal from "@/components/PaymentModal";
 
 const ParentDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -18,7 +20,16 @@ const ParentDashboard = () => {
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showAddChildModal, setShowAddChildModal] = useState(false);
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+  const [showJoinLessonModal, setShowJoinLessonModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [selectedPayment, setSelectedPayment] = useState<any>(null);
+
+  // Filter states
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
 
   // Mock data
   const [children, setChildren] = useState([
@@ -43,7 +54,7 @@ const ParentDashboard = () => {
     { id: 3, date: "2024-01-05", tutor: "Prof. Yaw Mensah", subject: "Science", amount: 150, status: "pending" }
   ];
 
-  const mockTutors = [
+  const allTutors = [
     {
       id: 1,
       name: "Dr. Kwame Asante",
@@ -65,8 +76,45 @@ const ParentDashboard = () => {
       location: "Kumasi",
       rate: "GHS 60/hour",
       availability: "Available"
+    },
+    {
+      id: 3,
+      name: "Prof. Yaw Mensah",
+      subjects: ["Chemistry", "Biology", "Science"],
+      rating: 4.7,
+      reviews: 28,
+      experience: "12 years",
+      location: "Tema",
+      rate: "GHS 90/hour",
+      availability: "Busy"
+    },
+    {
+      id: 4,
+      name: "Dr. Ama Adjei",
+      subjects: ["Mathematics", "Statistics"],
+      rating: 4.9,
+      reviews: 52,
+      experience: "10 years",
+      location: "Accra",
+      rate: "GHS 85/hour",
+      availability: "Available"
     }
   ];
+
+  // Filter tutors based on search term, subject, and location
+  const filteredTutors = allTutors.filter(tutor => {
+    const matchesSearch = searchTerm === "" || 
+      tutor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tutor.subjects.some(subject => subject.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesSubject = selectedSubject === "" || 
+      tutor.subjects.some(subject => subject.toLowerCase() === selectedSubject.toLowerCase());
+    
+    const matchesLocation = selectedLocation === "" || 
+      tutor.location.toLowerCase() === selectedLocation.toLowerCase();
+
+    return matchesSearch && matchesSubject && matchesLocation;
+  });
 
   const handleViewProgress = (child: any) => {
     setSelectedChild({
@@ -84,6 +132,27 @@ const ParentDashboard = () => {
 
   const handleAddChild = (newChild: any) => {
     setChildren(prev => [...prev, newChild]);
+  };
+
+  const handleRescheduleLesson = (lesson: any) => {
+    setSelectedLesson(lesson);
+    setShowRescheduleModal(true);
+  };
+
+  const handleJoinLesson = (lesson: any) => {
+    setSelectedLesson(lesson);
+    setShowJoinLessonModal(true);
+  };
+
+  const handleMakePayment = (payment: any) => {
+    setSelectedPayment(payment);
+    setShowPaymentModal(true);
+  };
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedSubject("");
+    setSelectedLocation("");
   };
 
   return (
@@ -225,13 +294,17 @@ const ParentDashboard = () => {
                             <p className="text-sm text-gray-600">with {lesson.tutor}</p>
                             <p className="text-sm text-gray-500">{lesson.time}</p>
                           </div>
-                          <Button size="sm">Join Lesson</Button>
+                          <Button size="sm" onClick={() => handleJoinLesson(lesson)}>
+                            <Video className="h-4 w-4 mr-1" />
+                            Join Lesson
+                          </Button>
                         </div>
                       ))}
                     </div>
                   </CardContent>
                 </Card>
 
+                {/* Tutor Requests */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Tutor Requests</CardTitle>
@@ -318,43 +391,72 @@ const ParentDashboard = () => {
                       </div>
                       <div className="space-y-2">
                         <Label>Subject</Label>
-                        <Select>
+                        <Select value={selectedSubject} onValueChange={setSelectedSubject}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select subject" />
                           </SelectTrigger>
                           <SelectContent>
+                            <SelectItem value="">All Subjects</SelectItem>
                             <SelectItem value="mathematics">Mathematics</SelectItem>
                             <SelectItem value="english">English</SelectItem>
                             <SelectItem value="science">Science</SelectItem>
+                            <SelectItem value="physics">Physics</SelectItem>
+                            <SelectItem value="chemistry">Chemistry</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="space-y-2">
                         <Label>Location</Label>
-                        <Select>
+                        <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select location" />
                           </SelectTrigger>
                           <SelectContent>
+                            <SelectItem value="">All Locations</SelectItem>
                             <SelectItem value="accra">Accra</SelectItem>
                             <SelectItem value="kumasi">Kumasi</SelectItem>
                             <SelectItem value="tema">Tema</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="flex items-end">
-                        <Button className="w-full">
+                      <div className="flex items-end gap-2">
+                        <Button className="flex-1" onClick={() => console.log("Applied filters")}>
                           <Filter className="h-4 w-4 mr-2" />
-                          Apply Filters
+                          Apply
+                        </Button>
+                        <Button variant="outline" onClick={clearFilters}>
+                          Clear
                         </Button>
                       </div>
                     </div>
+                    
+                    {/* Filter Summary */}
+                    {(searchTerm || selectedSubject || selectedLocation) && (
+                      <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-blue-800">
+                            Showing {filteredTutors.length} of {allTutors.length} tutors
+                          </span>
+                          <div className="flex gap-2">
+                            {searchTerm && (
+                              <Badge variant="secondary">Search: {searchTerm}</Badge>
+                            )}
+                            {selectedSubject && (
+                              <Badge variant="secondary">Subject: {selectedSubject}</Badge>
+                            )}
+                            {selectedLocation && (
+                              <Badge variant="secondary">Location: {selectedLocation}</Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
                 {/* Tutors Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {mockTutors.map((tutor) => (
+                  {filteredTutors.map((tutor) => (
                     <Card key={tutor.id} className="hover:shadow-lg transition-shadow">
                       <CardContent className="p-6">
                         <div className="flex items-center space-x-4 mb-4">
@@ -407,6 +509,17 @@ const ParentDashboard = () => {
                     </Card>
                   ))}
                 </div>
+
+                {filteredTutors.length === 0 && (
+                  <Card>
+                    <CardContent className="p-8 text-center">
+                      <p className="text-gray-500">No tutors found matching your criteria.</p>
+                      <Button variant="outline" onClick={clearFilters} className="mt-2">
+                        Clear Filters
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             )}
 
@@ -440,8 +553,13 @@ const ParentDashboard = () => {
                           </div>
                         </div>
                         <div className="flex justify-end mt-4 gap-2">
-                          <Button size="sm" variant="outline">Reschedule</Button>
-                          <Button size="sm">Join Lesson</Button>
+                          <Button size="sm" variant="outline" onClick={() => handleRescheduleLesson(lesson)}>
+                            Reschedule
+                          </Button>
+                          <Button size="sm" onClick={() => handleJoinLesson(lesson)}>
+                            <Video className="h-4 w-4 mr-1" />
+                            Join Lesson
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -483,6 +601,11 @@ const ParentDashboard = () => {
                                   <><Clock className="h-3 w-3 mr-1" /> Pending</>
                                 )}
                               </Badge>
+                              {payment.status === "pending" && (
+                                <Button size="sm" onClick={() => handleMakePayment(payment)}>
+                                  Pay Now
+                                </Button>
+                              )}
                               <Button size="sm" variant="outline">Invoice</Button>
                             </div>
                           </div>
@@ -541,6 +664,30 @@ const ParentDashboard = () => {
         onClose={() => setShowAddChildModal(false)}
         onChildAdded={handleAddChild}
       />
+
+      {selectedLesson && (
+        <RescheduleModal
+          isOpen={showRescheduleModal}
+          onClose={() => setShowRescheduleModal(false)}
+          lesson={selectedLesson}
+        />
+      )}
+
+      {selectedLesson && (
+        <JoinLessonModal
+          isOpen={showJoinLessonModal}
+          onClose={() => setShowJoinLessonModal(false)}
+          lesson={selectedLesson}
+        />
+      )}
+
+      {selectedPayment && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          payment={selectedPayment}
+        />
+      )}
     </div>
   );
 };
