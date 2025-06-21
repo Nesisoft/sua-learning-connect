@@ -105,8 +105,7 @@ const WithdrawalModal = ({ isOpen, onClose, type, availableBalance }: Withdrawal
               id="amount"
               type="number"
               min="10"
-              max={available
-
+              max={availableBalance}
               placeholder="Enter amount"
               value={withdrawalData.amount}
               onChange={(e) => setWithdrawalData(prev => ({ ...prev, amount: e.target.value }))}
