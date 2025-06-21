@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, MapPin, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -27,12 +28,16 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-3">
-                Find a Tutor
-              </Button>
-              <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 text-lg px-8 py-3">
-                Become a Tutor
-              </Button>
+              <Link to="/find-tutors">
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-3 w-full sm:w-auto">
+                  Find a Tutor
+                </Button>
+              </Link>
+              <Link to="/register/tutor">
+                <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 text-lg px-8 py-3 w-full sm:w-auto">
+                  Become a Tutor
+                </Button>
+              </Link>
             </div>
 
             <div className="flex items-center space-x-6 pt-4">

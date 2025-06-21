@@ -14,6 +14,7 @@ import TutorProfileSetup from "./pages/TutorProfileSetup";
 import ParentDashboard from "./pages/ParentDashboard";
 import TutorDashboard from "./pages/TutorDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import FindTutors from "./pages/FindTutors";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/dashboard/parent" element={<ParentDashboard />} />
           <Route path="/dashboard/tutor" element={<TutorDashboard />} />
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
+          <Route path="/find-tutors" element={<FindTutors />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
