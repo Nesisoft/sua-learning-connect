@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Users, Calendar, CreditCard, Star, MapPin, LogOut, Plus, Search, Clock, Filter, DollarSign, CheckCircle, X, Video } from "lucide-react";
+import { BookOpen, Users, Calendar, CreditCard, Star, MapPin, LogOut, Plus, Search, Clock, Filter, DollarSign, CheckCircle, X, Video, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import StudentProgressModal from "@/components/StudentProgressModal";
 import RequestTutorModal from "@/components/RequestTutorModal";
@@ -25,6 +26,7 @@ const ParentDashboard = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
@@ -155,23 +157,39 @@ const ParentDashboard = () => {
     setSelectedLocation("");
   };
 
+  const navigationItems = [
+    { id: "overview", label: "Overview", icon: Users },
+    { id: "children", label: "My Children", icon: Users },
+    { id: "tutors", label: "Find Tutors", icon: Search },
+    { id: "lessons", label: "Lessons", icon: Calendar },
+    { id: "payments", label: "Payments", icon: CreditCard }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+      <header className="bg-white border-b sticky top-0 z-40">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center space-x-2">
-              <BookOpen className="h-8 w-8 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-900">Sua</span>
-              <Badge variant="outline">Parent</Badge>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="lg:hidden"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+              <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+              <span className="text-xl sm:text-2xl font-bold text-gray-900">Sua</span>
+              <Badge variant="outline" className="hidden sm:inline-flex">Parent</Badge>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Welcome, John Johnson</span>
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <span className="text-sm sm:text-base text-gray-700 hidden sm:block">Welcome, John Johnson</span>
               <Link to="/login">
-                <Button variant="ghost" size="sm">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
+                <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
+                  <LogOut className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Logout</span>
                 </Button>
               </Link>
             </div>
@@ -179,100 +197,85 @@ const ParentDashboard = () => {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
-          {/* Sidebar */}
-          <div className="w-64 space-y-2">
-            <Button
-              variant={activeTab === "overview" ? "default" : "ghost"}
-              className="w-full justify-start"
-              onClick={() => setActiveTab("overview")}
-            >
-              <Users className="h-4 w-4 mr-2" />
-              Overview
-            </Button>
-            <Button
-              variant={activeTab === "children" ? "default" : "ghost"}
-              className="w-full justify-start"
-              onClick={() => setActiveTab("children")}
-            >
-              <Users className="h-4 w-4 mr-2" />
-              My Children
-            </Button>
-            <Button
-              variant={activeTab === "tutors" ? "default" : "ghost"}
-              className="w-full justify-start"
-              onClick={() => setActiveTab("tutors")}
-            >
-              <Search className="h-4 w-4 mr-2" />
-              Find Tutors
-            </Button>
-            <Button
-              variant={activeTab === "lessons" ? "default" : "ghost"}
-              className="w-full justify-start"
-              onClick={() => setActiveTab("lessons")}
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              Lessons
-            </Button>
-            <Button
-              variant={activeTab === "payments" ? "default" : "ghost"}
-              className="w-full justify-start"
-              onClick={() => setActiveTab("payments")}
-            >
-              <CreditCard className="h-4 w-4 mr-2" />
-              Payments
-            </Button>
-          </div>
+      <div className="flex">
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-30 bg-gray-600 bg-opacity-50 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        )}
 
-          {/* Main Content */}
-          <div className="flex-1">
+        {/* Sidebar */}
+        <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:block`}>
+          <div className="flex flex-col h-full pt-16 lg:pt-0">
+            <div className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+              {navigationItems.map((item) => (
+                <Button
+                  key={item.id}
+                  variant={activeTab === item.id ? "default" : "ghost"}
+                  className="w-full justify-start text-sm"
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setSidebarOpen(false);
+                  }}
+                >
+                  <item.icon className="h-4 w-4 mr-3" />
+                  {item.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 lg:ml-0 min-h-screen">
+          <div className="p-4 sm:p-6 lg:p-8">
             {activeTab === "overview" && (
               <div className="space-y-6">
-                <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard Overview</h1>
                 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                   <Card>
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center">
-                        <Users className="h-8 w-8 text-blue-600" />
-                        <div className="ml-4">
-                          <p className="text-sm font-medium text-gray-600">Children</p>
-                          <p className="text-2xl font-bold text-gray-900">{children.length}</p>
+                        <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+                        <div className="ml-3 sm:ml-4">
+                          <p className="text-xs sm:text-sm font-medium text-gray-600">Children</p>
+                          <p className="text-lg sm:text-2xl font-bold text-gray-900">{children.length}</p>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center">
-                        <Calendar className="h-8 w-8 text-green-600" />
-                        <div className="ml-4">
-                          <p className="text-sm font-medium text-gray-600">This Week</p>
-                          <p className="text-2xl font-bold text-gray-900">8</p>
+                        <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
+                        <div className="ml-3 sm:ml-4">
+                          <p className="text-xs sm:text-sm font-medium text-gray-600">This Week</p>
+                          <p className="text-lg sm:text-2xl font-bold text-gray-900">8</p>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center">
-                        <Star className="h-8 w-8 text-yellow-600" />
-                        <div className="ml-4">
-                          <p className="text-sm font-medium text-gray-600">Active Tutors</p>
-                          <p className="text-2xl font-bold text-gray-900">3</p>
+                        <Star className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
+                        <div className="ml-3 sm:ml-4">
+                          <p className="text-xs sm:text-sm font-medium text-gray-600">Active Tutors</p>
+                          <p className="text-lg sm:text-2xl font-bold text-gray-900">3</p>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center">
-                        <CreditCard className="h-8 w-8 text-purple-600" />
-                        <div className="ml-4">
-                          <p className="text-sm font-medium text-gray-600">This Month</p>
-                          <p className="text-2xl font-bold text-gray-900">GHS 450</p>
+                        <CreditCard className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600" />
+                        <div className="ml-3 sm:ml-4">
+                          <p className="text-xs sm:text-sm font-medium text-gray-600">This Month</p>
+                          <p className="text-lg sm:text-2xl font-bold text-gray-900">GHS 450</p>
                         </div>
                       </div>
                     </CardContent>
@@ -282,19 +285,19 @@ const ParentDashboard = () => {
                 {/* Upcoming Lessons */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Upcoming Lessons</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl">Upcoming Lessons</CardTitle>
                     <CardDescription>Your children's scheduled lessons</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {upcomingLessons.map((lesson) => (
-                        <div key={lesson.id} className="flex items-center justify-between p-4 border rounded-lg">
-                          <div>
-                            <h3 className="font-semibold">{lesson.subject} - {lesson.student}</h3>
-                            <p className="text-sm text-gray-600">with {lesson.tutor}</p>
-                            <p className="text-sm text-gray-500">{lesson.time}</p>
+                        <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg space-y-3 sm:space-y-0">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-sm sm:text-base">{lesson.subject} - {lesson.student}</h3>
+                            <p className="text-xs sm:text-sm text-gray-600">with {lesson.tutor}</p>
+                            <p className="text-xs sm:text-sm text-gray-500">{lesson.time}</p>
                           </div>
-                          <Button size="sm" onClick={() => handleJoinLesson(lesson)}>
+                          <Button size="sm" onClick={() => handleJoinLesson(lesson)} className="w-full sm:w-auto">
                             <Video className="h-4 w-4 mr-1" />
                             Join Lesson
                           </Button>
@@ -307,18 +310,18 @@ const ParentDashboard = () => {
                 {/* Tutor Requests */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Tutor Requests</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl">Tutor Requests</CardTitle>
                     <CardDescription>Your active requests for tutors</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {tutorRequests.map((request) => (
-                        <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div key={request.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg space-y-3 sm:space-y-0">
                           <div>
-                            <h3 className="font-semibold">{request.subject} - {request.grade}</h3>
-                            <p className="text-sm text-gray-600">{request.matches} tutor matches found</p>
+                            <h3 className="font-semibold text-sm sm:text-base">{request.subject} - {request.grade}</h3>
+                            <p className="text-xs sm:text-sm text-gray-600">{request.matches} tutor matches found</p>
                           </div>
-                          <Badge variant={request.status === "Pending" ? "secondary" : "default"}>
+                          <Badge variant={request.status === "Pending" ? "secondary" : "default"} className="w-fit">
                             {request.status}
                           </Badge>
                         </div>
@@ -331,9 +334,9 @@ const ParentDashboard = () => {
 
             {activeTab === "children" && (
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h1 className="text-3xl font-bold text-gray-900">My Children</h1>
-                  <Button onClick={() => setShowAddChildModal(true)}>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Children</h1>
+                  <Button onClick={() => setShowAddChildModal(true)} className="w-full sm:w-auto">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Child
                   </Button>
@@ -343,22 +346,22 @@ const ParentDashboard = () => {
                   {children.map((child) => (
                     <Card key={child.id}>
                       <CardHeader>
-                        <CardTitle>{child.name}</CardTitle>
+                        <CardTitle className="text-lg sm:text-xl">{child.name}</CardTitle>
                         <CardDescription>{child.grade}</CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-4">
                           <div>
                             <p className="text-sm font-medium text-gray-600 mb-2">Current Subjects</p>
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2">
                               {child.subjects.length > 0 ? child.subjects.map((subject) => (
-                                <Badge key={subject} variant="outline">{subject}</Badge>
-                              )) : <span className="text-gray-500">No subjects added yet</span>}
+                                <Badge key={subject} variant="outline" className="text-xs">{subject}</Badge>
+                              )) : <span className="text-gray-500 text-sm">No subjects added yet</span>}
                             </div>
                           </div>
-                          <div className="flex gap-2">
-                            <Button size="sm" onClick={() => handleViewProgress(child)}>View Progress</Button>
-                            <Button size="sm" variant="outline" onClick={() => handleRequestTutor(child)}>Request Tutor</Button>
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <Button size="sm" onClick={() => handleViewProgress(child)} className="w-full sm:w-auto">View Progress</Button>
+                            <Button size="sm" variant="outline" onClick={() => handleRequestTutor(child)} className="w-full sm:w-auto">Request Tutor</Button>
                           </div>
                         </div>
                       </CardContent>
@@ -370,29 +373,29 @@ const ParentDashboard = () => {
 
             {activeTab === "tutors" && (
               <div className="space-y-6">
-                <h1 className="text-3xl font-bold text-gray-900">Find Tutors</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Find Tutors</h1>
                 
                 {/* Search and Filters */}
                 <Card>
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="search">Search Tutors</Label>
+                        <Label htmlFor="search" className="text-sm">Search Tutors</Label>
                         <div className="relative">
                           <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                           <Input
                             id="search"
                             placeholder="Name or subject..."
-                            className="pl-10"
+                            className="pl-10 text-sm"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                           />
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label>Subject</Label>
+                        <Label className="text-sm">Subject</Label>
                         <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                          <SelectTrigger>
+                          <SelectTrigger className="text-sm">
                             <SelectValue placeholder="Select subject" />
                           </SelectTrigger>
                           <SelectContent>
@@ -406,9 +409,9 @@ const ParentDashboard = () => {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Location</Label>
+                        <Label className="text-sm">Location</Label>
                         <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                          <SelectTrigger>
+                          <SelectTrigger className="text-sm">
                             <SelectValue placeholder="Select location" />
                           </SelectTrigger>
                           <SelectContent>
@@ -419,12 +422,12 @@ const ParentDashboard = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="flex items-end gap-2">
-                        <Button className="flex-1" onClick={() => console.log("Applied filters")}>
+                      <div className="flex flex-col sm:flex-row items-end gap-2">
+                        <Button className="flex-1 w-full text-sm" onClick={() => console.log("Applied filters")}>
                           <Filter className="h-4 w-4 mr-2" />
                           Apply
                         </Button>
-                        <Button variant="outline" onClick={clearFilters}>
+                        <Button variant="outline" onClick={clearFilters} className="w-full sm:w-auto text-sm">
                           Clear
                         </Button>
                       </div>
@@ -433,19 +436,19 @@ const ParentDashboard = () => {
                     {/* Filter Summary */}
                     {(searchTerm || selectedSubject || selectedLocation) && (
                       <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
                           <span className="text-sm text-blue-800">
                             Showing {filteredTutors.length} of {allTutors.length} tutors
                           </span>
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap gap-2">
                             {searchTerm && (
-                              <Badge variant="secondary">Search: {searchTerm}</Badge>
+                              <Badge variant="secondary" className="text-xs">Search: {searchTerm}</Badge>
                             )}
                             {selectedSubject && selectedSubject !== "all" && (
-                              <Badge variant="secondary">Subject: {selectedSubject}</Badge>
+                              <Badge variant="secondary" className="text-xs">Subject: {selectedSubject}</Badge>
                             )}
                             {selectedLocation && selectedLocation !== "all" && (
-                              <Badge variant="secondary">Location: {selectedLocation}</Badge>
+                              <Badge variant="secondary" className="text-xs">Location: {selectedLocation}</Badge>
                             )}
                           </div>
                         </div>
@@ -455,17 +458,17 @@ const ParentDashboard = () => {
                 </Card>
 
                 {/* Tutors Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                   {filteredTutors.map((tutor) => (
                     <Card key={tutor.id} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6">
+                      <CardContent className="p-4 sm:p-6">
                         <div className="flex items-center space-x-4 mb-4">
-                          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                            <Users className="h-8 w-8 text-gray-500" />
+                          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-full flex items-center justify-center">
+                            <Users className="h-6 w-6 sm:h-8 sm:w-8 text-gray-500" />
                           </div>
-                          <div>
-                            <h3 className="font-semibold text-lg">{tutor.name}</h3>
-                            <p className="text-sm text-gray-600">{tutor.experience} experience</p>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-base sm:text-lg">{tutor.name}</h3>
+                            <p className="text-xs sm:text-sm text-gray-600">{tutor.experience} experience</p>
                           </div>
                         </div>
 
@@ -487,7 +490,7 @@ const ParentDashboard = () => {
                               <span>{tutor.rating}</span>
                               <span className="text-gray-500">({tutor.reviews} reviews)</span>
                             </div>
-                            <Badge variant={tutor.availability === "Available" ? "default" : "secondary"}>
+                            <Badge variant={tutor.availability === "Available" ? "default" : "secondary"} className="text-xs">
                               {tutor.availability}
                             </Badge>
                           </div>
@@ -500,9 +503,9 @@ const ParentDashboard = () => {
                             <span className="font-semibold text-green-600">{tutor.rate}</span>
                           </div>
 
-                          <div className="flex gap-2 pt-2">
-                            <Button size="sm" className="flex-1">View Profile</Button>
-                            <Button size="sm" variant="outline" className="flex-1">Book Lesson</Button>
+                          <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                            <Button size="sm" className="flex-1 text-xs">View Profile</Button>
+                            <Button size="sm" variant="outline" className="flex-1 text-xs">Book Lesson</Button>
                           </div>
                         </div>
                       </CardContent>
@@ -512,9 +515,9 @@ const ParentDashboard = () => {
 
                 {filteredTutors.length === 0 && (
                   <Card>
-                    <CardContent className="p-8 text-center">
-                      <p className="text-gray-500">No tutors found matching your criteria.</p>
-                      <Button variant="outline" onClick={clearFilters} className="mt-2">
+                    <CardContent className="p-6 sm:p-8 text-center">
+                      <p className="text-gray-500 mb-4">No tutors found matching your criteria.</p>
+                      <Button variant="outline" onClick={clearFilters}>
                         Clear Filters
                       </Button>
                     </CardContent>
@@ -525,38 +528,38 @@ const ParentDashboard = () => {
 
             {activeTab === "lessons" && (
               <div className="space-y-6">
-                <h1 className="text-3xl font-bold text-gray-900">Lessons Schedule</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Lessons Schedule</h1>
                 
-                <div className="grid gap-6">
+                <div className="grid gap-4 sm:gap-6">
                   {upcomingLessons.map((lesson) => (
                     <Card key={lesson.id}>
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
                           <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                              <BookOpen className="h-6 w-6 text-blue-600" />
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                              <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                             </div>
                             <div>
-                              <h3 className="font-semibold text-lg">{lesson.subject}</h3>
-                              <p className="text-sm text-gray-600">with {lesson.tutor}</p>
-                              <p className="text-sm text-gray-500">Student: {lesson.student}</p>
+                              <h3 className="font-semibold text-base sm:text-lg">{lesson.subject}</h3>
+                              <p className="text-xs sm:text-sm text-gray-600">with {lesson.tutor}</p>
+                              <p className="text-xs sm:text-sm text-gray-500">Student: {lesson.student}</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <div className="flex items-center text-sm text-gray-600 mb-2">
+                          <div className="text-left sm:text-right">
+                            <div className="flex items-center text-xs sm:text-sm text-gray-600 mb-2">
                               <Clock className="h-4 w-4 mr-1" />
                               {lesson.time}
                             </div>
-                            <Badge variant={lesson.status === "confirmed" ? "default" : "secondary"}>
+                            <Badge variant={lesson.status === "confirmed" ? "default" : "secondary"} className="text-xs mb-3 sm:mb-0">
                               {lesson.status}
                             </Badge>
                           </div>
                         </div>
-                        <div className="flex justify-end mt-4 gap-2">
-                          <Button size="sm" variant="outline" onClick={() => handleRescheduleLesson(lesson)}>
+                        <div className="flex flex-col sm:flex-row justify-end mt-4 gap-2">
+                          <Button size="sm" variant="outline" onClick={() => handleRescheduleLesson(lesson)} className="w-full sm:w-auto text-xs">
                             Reschedule
                           </Button>
-                          <Button size="sm" onClick={() => handleJoinLesson(lesson)}>
+                          <Button size="sm" onClick={() => handleJoinLesson(lesson)} className="w-full sm:w-auto text-xs">
                             <Video className="h-4 w-4 mr-1" />
                             Join Lesson
                           </Button>
@@ -570,43 +573,45 @@ const ParentDashboard = () => {
 
             {activeTab === "payments" && (
               <div className="space-y-6">
-                <h1 className="text-3xl font-bold text-gray-900">Payment History</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Payment History</h1>
                 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Recent Payments</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl">Recent Payments</CardTitle>
                     <CardDescription>Your payment history and invoices</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {payments.map((payment) => (
-                        <div key={payment.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div key={payment.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg space-y-4 sm:space-y-0">
                           <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                              <DollarSign className="h-5 w-5 text-green-600" />
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center">
+                              <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                             </div>
                             <div>
-                              <h3 className="font-semibold">{payment.subject} Lesson</h3>
-                              <p className="text-sm text-gray-600">with {payment.tutor}</p>
-                              <p className="text-sm text-gray-500">{payment.date}</p>
+                              <h3 className="font-semibold text-sm sm:text-base">{payment.subject} Lesson</h3>
+                              <p className="text-xs sm:text-sm text-gray-600">with {payment.tutor}</p>
+                              <p className="text-xs sm:text-sm text-gray-500">{payment.date}</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <div className="font-semibold text-lg">GHS {payment.amount}</div>
-                            <div className="flex items-center gap-2">
-                              <Badge variant={payment.status === "paid" ? "default" : "secondary"}>
+                          <div className="text-left sm:text-right">
+                            <div className="font-semibold text-base sm:text-lg">GHS {payment.amount}</div>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-2">
+                              <Badge variant={payment.status === "paid" ? "default" : "secondary"} className="text-xs w-fit">
                                 {payment.status === "paid" ? (
                                   <><CheckCircle className="h-3 w-3 mr-1" /> Paid</>
                                 ) : (
                                   <><Clock className="h-3 w-3 mr-1" /> Pending</>
                                 )}
                               </Badge>
-                              {payment.status === "pending" && (
-                                <Button size="sm" onClick={() => handleMakePayment(payment)}>
-                                  Pay Now
-                                </Button>
-                              )}
-                              <Button size="sm" variant="outline">Invoice</Button>
+                              <div className="flex flex-col sm:flex-row gap-2">
+                                {payment.status === "pending" && (
+                                  <Button size="sm" onClick={() => handleMakePayment(payment)} className="text-xs">
+                                    Pay Now
+                                  </Button>
+                                )}
+                                <Button size="sm" variant="outline" className="text-xs">Invoice</Button>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -616,23 +621,23 @@ const ParentDashboard = () => {
                 </Card>
 
                 {/* Payment Summary */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                   <Card>
-                    <CardContent className="p-6 text-center">
-                      <div className="text-2xl font-bold text-gray-900 mb-2">GHS 360</div>
-                      <div className="text-sm text-gray-600">Paid This Month</div>
+                    <CardContent className="p-4 sm:p-6 text-center">
+                      <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">GHS 360</div>
+                      <div className="text-xs sm:text-sm text-gray-600">Paid This Month</div>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-6 text-center">
-                      <div className="text-2xl font-bold text-orange-600 mb-2">GHS 150</div>
-                      <div className="text-sm text-gray-600">Pending Payment</div>
+                    <CardContent className="p-4 sm:p-6 text-center">
+                      <div className="text-xl sm:text-2xl font-bold text-orange-600 mb-2">GHS 150</div>
+                      <div className="text-xs sm:text-sm text-gray-600">Pending Payment</div>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-6 text-center">
-                      <div className="text-2xl font-bold text-green-600 mb-2">GHS 1,240</div>
-                      <div className="text-sm text-gray-600">Total Paid</div>
+                    <CardContent className="p-4 sm:p-6 text-center">
+                      <div className="text-xl sm:text-2xl font-bold text-green-600 mb-2">GHS 1,240</div>
+                      <div className="text-xs sm:text-sm text-gray-600">Total Paid</div>
                     </CardContent>
                   </Card>
                 </div>
