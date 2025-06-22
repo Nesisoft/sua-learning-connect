@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +13,9 @@ import AddChildModal from "@/components/AddChildModal";
 import RescheduleModal from "@/components/RescheduleModal";
 import JoinLessonModal from "@/components/JoinLessonModal";
 import PaymentModal from "@/components/PaymentModal";
+import TutorProfileModal from "@/components/TutorProfileModal";
+import BookLessonModal from "@/components/BookLessonModal";
+import InvoiceModal from "@/components/InvoiceModal";
 
 const ParentDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -27,6 +29,11 @@ const ParentDashboard = () => {
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showTutorProfileModal, setShowTutorProfileModal] = useState(false);
+  const [showBookLessonModal, setShowBookLessonModal] = useState(false);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [selectedTutor, setSelectedTutor] = useState<any>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
@@ -149,6 +156,21 @@ const ParentDashboard = () => {
   const handleMakePayment = (payment: any) => {
     setSelectedPayment(payment);
     setShowPaymentModal(true);
+  };
+
+  const handleViewTutorProfile = (tutor: any) => {
+    setSelectedTutor(tutor);
+    setShowTutorProfileModal(true);
+  };
+
+  const handleBookTutorLesson = (tutor: any) => {
+    setSelectedTutor(tutor);
+    setShowBookLessonModal(true);
+  };
+
+  const handleViewInvoice = (payment: any) => {
+    setSelectedInvoice(payment);
+    setShowInvoiceModal(true);
   };
 
   const clearFilters = () => {
@@ -504,8 +526,12 @@ const ParentDashboard = () => {
                           </div>
 
                           <div className="flex flex-col sm:flex-row gap-2 pt-2">
-                            <Button size="sm" className="flex-1 text-xs">View Profile</Button>
-                            <Button size="sm" variant="outline" className="flex-1 text-xs">Book Lesson</Button>
+                            <Button size="sm" className="flex-1 text-xs" onClick={() => handleViewTutorProfile(tutor)}>
+                              View Profile
+                            </Button>
+                            <Button size="sm" variant="outline" className="flex-1 text-xs" onClick={() => handleBookTutorLesson(tutor)}>
+                              Book Lesson
+                            </Button>
                           </div>
                         </div>
                       </CardContent>
@@ -575,6 +601,28 @@ const ParentDashboard = () => {
               <div className="space-y-6">
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Payment History</h1>
                 
+                {/* Payment Statistics */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                  <Card>
+                    <CardContent className="p-4 sm:p-6 text-center">
+                      <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">GHS 360</div>
+                      <div className="text-xs sm:text-sm text-gray-600">Paid This Month</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4 sm:p-6 text-center">
+                      <div className="text-xl sm:text-2xl font-bold text-orange-600 mb-2">GHS 150</div>
+                      <div className="text-xs sm:text-sm text-gray-600">Pending Payment</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4 sm:p-6 text-center">
+                      <div className="text-xl sm:text-2xl font-bold text-green-600 mb-2">GHS 1,240</div>
+                      <div className="text-xs sm:text-sm text-gray-600">Total Paid</div>
+                    </CardContent>
+                  </Card>
+                </div>
+
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg sm:text-xl">Recent Payments</CardTitle>
@@ -610,7 +658,9 @@ const ParentDashboard = () => {
                                     Pay Now
                                   </Button>
                                 )}
-                                <Button size="sm" variant="outline" className="text-xs">Invoice</Button>
+                                <Button size="sm" variant="outline" className="text-xs" onClick={() => handleViewInvoice(payment)}>
+                                  View Invoice
+                                </Button>
                               </div>
                             </div>
                           </div>
@@ -619,28 +669,6 @@ const ParentDashboard = () => {
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* Payment Summary */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                  <Card>
-                    <CardContent className="p-4 sm:p-6 text-center">
-                      <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">GHS 360</div>
-                      <div className="text-xs sm:text-sm text-gray-600">Paid This Month</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4 sm:p-6 text-center">
-                      <div className="text-xl sm:text-2xl font-bold text-orange-600 mb-2">GHS 150</div>
-                      <div className="text-xs sm:text-sm text-gray-600">Pending Payment</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4 sm:p-6 text-center">
-                      <div className="text-xl sm:text-2xl font-bold text-green-600 mb-2">GHS 1,240</div>
-                      <div className="text-xs sm:text-sm text-gray-600">Total Paid</div>
-                    </CardContent>
-                  </Card>
-                </div>
               </div>
             )}
           </div>
@@ -691,6 +719,35 @@ const ParentDashboard = () => {
           isOpen={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}
           payment={selectedPayment}
+        />
+      )}
+
+      {selectedTutor && (
+        <TutorProfileModal
+          isOpen={showTutorProfileModal}
+          onClose={() => setShowTutorProfileModal(false)}
+          tutor={selectedTutor}
+          onBookLesson={() => {
+            setShowTutorProfileModal(false);
+            setShowBookLessonModal(true);
+          }}
+        />
+      )}
+
+      {selectedTutor && (
+        <BookLessonModal
+          isOpen={showBookLessonModal}
+          onClose={() => setShowBookLessonModal(false)}
+          tutorName={selectedTutor.name}
+          rate={selectedTutor.rate}
+        />
+      )}
+
+      {selectedInvoice && (
+        <InvoiceModal
+          isOpen={showInvoiceModal}
+          onClose={() => setShowInvoiceModal(false)}
+          payment={selectedInvoice}
         />
       )}
     </div>
