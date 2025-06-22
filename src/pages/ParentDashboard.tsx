@@ -107,10 +107,10 @@ const ParentDashboard = () => {
       tutor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tutor.subjects.some(subject => subject.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesSubject = selectedSubject === "" || 
+    const matchesSubject = selectedSubject === "" || selectedSubject === "all" ||
       tutor.subjects.some(subject => subject.toLowerCase() === selectedSubject.toLowerCase());
     
-    const matchesLocation = selectedLocation === "" || 
+    const matchesLocation = selectedLocation === "" || selectedLocation === "all" ||
       tutor.location.toLowerCase() === selectedLocation.toLowerCase();
 
     return matchesSearch && matchesSubject && matchesLocation;
@@ -396,7 +396,7 @@ const ParentDashboard = () => {
                             <SelectValue placeholder="Select subject" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">All Subjects</SelectItem>
+                            <SelectItem value="all">All Subjects</SelectItem>
                             <SelectItem value="mathematics">Mathematics</SelectItem>
                             <SelectItem value="english">English</SelectItem>
                             <SelectItem value="science">Science</SelectItem>
@@ -412,7 +412,7 @@ const ParentDashboard = () => {
                             <SelectValue placeholder="Select location" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">All Locations</SelectItem>
+                            <SelectItem value="all">All Locations</SelectItem>
                             <SelectItem value="accra">Accra</SelectItem>
                             <SelectItem value="kumasi">Kumasi</SelectItem>
                             <SelectItem value="tema">Tema</SelectItem>
@@ -441,10 +441,10 @@ const ParentDashboard = () => {
                             {searchTerm && (
                               <Badge variant="secondary">Search: {searchTerm}</Badge>
                             )}
-                            {selectedSubject && (
+                            {selectedSubject && selectedSubject !== "all" && (
                               <Badge variant="secondary">Subject: {selectedSubject}</Badge>
                             )}
-                            {selectedLocation && (
+                            {selectedLocation && selectedLocation !== "all" && (
                               <Badge variant="secondary">Location: {selectedLocation}</Badge>
                             )}
                           </div>
