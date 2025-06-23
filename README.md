@@ -1,73 +1,54 @@
-# Welcome to your Lovable project
+# 📚 Sua – Bridging Parents with Trusted Tutors
 
-## Project info
+**Sua** is a smart tutoring platform designed to connect parents with qualified and verified tutors for personalized **home** and **virtual** tutoring services. Built with trust, flexibility, and education impact in mind, Sua is redefining how tutoring works in Africa.
 
-**URL**: https://lovable.dev/projects/e0d40c85-90a5-4ce2-ada8-e5ae787c2866
+![Sua Banner](banner-image-url) <!-- Optional: Replace with your banner -->
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🚀 Features
 
-**Use Lovable**
+- ✅ Parent registration and ward management  
+- ✅ Browse and book verified tutors by subject, location, rate  
+- ✅ Tutor registration with verification and profile setup  
+- ✅ Flexible scheduling with cost computation  
+- ✅ Secure payments (Mobile Money, Card, Bank)  
+- ✅ Session tracking, attendance & reporting  
+- ✅ Tutor ratings and feedback  
+- ✅ Admin dashboard for verification, matching & monitoring  
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/e0d40c85-90a5-4ce2-ada8-e5ae787c2866) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📦 Tech Stack
 
-**Use your preferred IDE**
+**Backend:** Laravel PHP  
+**Frontend:** ReactJS / Tailwind CSS *(planned)*  
+**Database:** MySQL / MariaDB  
+**Mobile App (Planned):** React Native  
+**API Documentation:** OpenAPI (Swagger)  
+**Payment Integration:** Paystack, Flutterwave
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🧱 Database Schema
 
-Follow these steps:
+The system follows a relational structure with the following core entities:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- Users (parents, tutors, admins)
+- Wards (children to be tutored)
+- Tutor Profiles and Subjects
+- Bookings & Sessions
+- Payments
+- Ratings & Reviews
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+You can find SQL, Laravel migrations, models, factories, and seeders in the `/database` and `/app/Models` folders.
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 🛠 Installation
 
-**Edit a file directly in GitHub**
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Nesisoft/sua-learning-connect.git
+   cd sua-learning-connect
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/e0d40c85-90a5-4ce2-ada8-e5ae787c2866) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
