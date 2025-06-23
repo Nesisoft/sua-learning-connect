@@ -58,15 +58,15 @@ const Footer = () => {
             <div className="space-y-3 text-gray-400">
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />
-                <span>hello@sua.ng</span>
+                <span>info@nesisoft.com</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4" />
-                <span>+234 800 SUA HELP</span>
+                <span>+233 55 314 0807 SUA HELP</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4" />
-                <span>Lagos, Nigeria</span>
+                <span>Accra, Ghana</span>
               </div>
             </div>
           </div>
@@ -75,7 +75,7 @@ const Footer = () => {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © 2024 Sua Learning Connect. All rights reserved.
+              © 2025 Sua Learning Connect. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
