@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { FileText, Download, Printer, Mail, Calendar, Clock, User, BookOpen, CreditCard, CheckCircle } from "lucide-react";
+import { FileText, Download, Mail, Calendar, Clock, User, BookOpen, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
 
 interface InvoiceModalProps {
   isOpen: boolean;
@@ -26,18 +27,42 @@ const InvoiceModal = ({ isOpen, onClose, payment }: InvoiceModalProps) => {
 
   const handleDownload = () => {
     console.log("Downloading invoice:", invoiceNumber);
-  };
-
-  const handlePrint = () => {
-    console.log("Printing invoice:", invoiceNumber);
+    
+    // Simulate PDF generation and download
+    setTimeout(() => {
+      // Create a mock blob for demonstration
+      const pdfContent = `Invoice ${invoiceNumber}\n\nDate: ${payment.date}\nTutor: ${payment.tutor}\nSubject: ${payment.subject}\nAmount: GHS ${payment.amount}\nStatus: ${payment.status}`;
+      const blob = new Blob([pdfContent], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create download link
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${invoiceNumber}.txt`; // Using .txt for demo, would be .pdf in real implementation
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("Invoice downloaded successfully!");
+    }, 1000);
+    
+    toast.loading("Generating PDF...", { duration: 1000 });
   };
 
   const handleEmail = () => {
     console.log("Emailing invoice:", invoiceNumber);
+    
+    // Simulate email sending
+    setTimeout(() => {
+      toast.success("Invoice emailed to john.johnson@email.com successfully!");
+    }, 1500);
+    
+    toast.loading("Sending invoice via email...", { duration: 1500 });
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl sm:text-2xl flex items-center">
@@ -189,13 +214,12 @@ const InvoiceModal = ({ isOpen, onClose, payment }: InvoiceModalProps) => {
               <Download className="h-4 w-4 mr-2" />
               Download PDF
             </Button>
-            <Button variant="outline" onClick={handlePrint} className="flex-1">
-              <Printer className="h-4 w-4 mr-2" />
-              Print
-            </Button>
             <Button variant="outline" onClick={handleEmail} className="flex-1">
               <Mail className="h-4 w-4 mr-2" />
               Email Invoice
+            </Button>
+            <Button variant="secondary" onClick={onClose} className="flex-1">
+              Close
             </Button>
           </div>
         </div>
