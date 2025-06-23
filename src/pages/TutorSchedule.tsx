@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,10 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { BookOpen, Calendar as CalendarIcon, Clock, Users, MapPin, Video, Home, Menu, X, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
+import RescheduleModal from "@/components/RescheduleModal";
+import JoinLessonModal from "@/components/JoinLessonModal";
 
 const TutorSchedule = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [rescheduleModal, setRescheduleModal] = useState({ isOpen: false, lesson: null });
+  const [joinModal, setJoinModal] = useState({ isOpen: false, lesson: null });
 
   // Mock schedule data
   const todayLessons = [
@@ -60,6 +65,36 @@ const TutorSchedule = () => {
     }
   ];
 
+  const handleReschedule = (lesson: any) => {
+    setRescheduleModal({ isOpen: true, lesson });
+  };
+
+  const handleJoin = (lesson: any) => {
+    setJoinModal({ isOpen: true, lesson });
+  };
+
+  const handleNavigate = (lesson: any) => {
+    console.log("Navigate to:", lesson.location);
+    alert(`Opening navigation to ${lesson.location}...`);
+  };
+
+  const handleSetAvailability = () => {
+    console.log("Setting availability...");
+    alert("Opening availability settings...");
+  };
+
+  const handleEdit = (lesson: any) => {
+    console.log("Edit lesson:", lesson);
+    alert(`Editing ${lesson.subject} lesson with ${lesson.student}...`);
+  };
+
+  const handleCancel = (lesson: any) => {
+    console.log("Cancel lesson:", lesson);
+    if (confirm(`Are you sure you want to cancel the ${lesson.subject} lesson with ${lesson.student}?`)) {
+      alert("Lesson cancelled successfully!");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -93,7 +128,7 @@ const TutorSchedule = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="flex gap-4 lg:gap-8">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
           {/* Mobile Sidebar Overlay */}
           {sidebarOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
@@ -101,7 +136,7 @@ const TutorSchedule = () => {
 
           {/* Sidebar */}
           <div className={`
-            fixed inset-y-0 left-0 z-50 w-64 bg-white border-r transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:bg-transparent lg:border-0
+            fixed inset-y-0 left-0 z-50 w-64 bg-white border-r transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:bg-transparent lg:border-0 lg:w-64
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           `}>
             <div className="p-4 space-y-2 pt-20 lg:pt-0">
@@ -137,10 +172,10 @@ const TutorSchedule = () => {
           </div>
 
           {/* Calendar Section */}
-          <div className="w-full lg:w-80">
+          <div className="w-full lg:w-80 order-2 lg:order-1">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <CalendarIcon className="h-5 w-5" />
                   Schedule Calendar
                 </CardTitle>
@@ -171,10 +206,13 @@ const TutorSchedule = () => {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 space-y-4 sm:space-y-6">
+          <div className="flex-1 space-y-4 sm:space-y-6 order-1 lg:order-2">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Schedule</h1>
-              <Button className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
+              <Button 
+                className="bg-green-600 hover:bg-green-700 w-full sm:w-auto"
+                onClick={handleSetAvailability}
+              >
                 Set Availability
               </Button>
             </div>
@@ -182,20 +220,20 @@ const TutorSchedule = () => {
             {/* Today's Lessons */}
             <Card>
               <CardHeader>
-                <CardTitle>Today's Lessons</CardTitle>
+                <CardTitle className="text-lg sm:text-xl">Today's Lessons</CardTitle>
                 <CardDescription>Your scheduled lessons for today</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {todayLessons.map((lesson) => (
-                    <div key={lesson.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={lesson.id} className="flex flex-col lg:flex-row lg:items-center justify-between p-4 border rounded-lg gap-4">
                       <div className="flex items-center space-x-4">
-                        <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
+                        <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg flex-shrink-0">
                           <Clock className="h-6 w-6 text-blue-600" />
                         </div>
-                        <div>
-                          <h3 className="font-semibold">{lesson.subject}</h3>
-                          <p className="text-sm text-gray-600">Student: {lesson.student}</p>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-sm sm:text-base">{lesson.subject}</h3>
+                          <p className="text-sm text-gray-600 truncate">Student: {lesson.student}</p>
                           <p className="text-sm text-gray-500">{lesson.time}</p>
                           <div className="flex items-center gap-2 mt-1">
                             {lesson.type === "Virtual" ? (
@@ -203,17 +241,28 @@ const TutorSchedule = () => {
                             ) : (
                               <Home className="h-4 w-4 text-blue-600" />
                             )}
-                            <span className="text-xs text-gray-500">{lesson.location}</span>
+                            <span className="text-xs text-gray-500 truncate">{lesson.location}</span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={lesson.status === "confirmed" ? "default" : "secondary"}>
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <Badge variant={lesson.status === "confirmed" ? "default" : "secondary"} className="self-start sm:self-center">
                           {lesson.status}
                         </Badge>
-                        <div className="flex gap-1">
-                          <Button size="sm" variant="outline">Reschedule</Button>
-                          <Button size="sm">
+                        <div className="flex flex-wrap gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-xs"
+                            onClick={() => handleReschedule(lesson)}
+                          >
+                            Reschedule
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            className="text-xs"
+                            onClick={lesson.type === "Virtual" ? () => handleJoin(lesson) : () => handleNavigate(lesson)}
+                          >
                             {lesson.type === "Virtual" ? "Join" : "Navigate"}
                           </Button>
                         </div>
@@ -227,20 +276,20 @@ const TutorSchedule = () => {
             {/* Upcoming Lessons */}
             <Card>
               <CardHeader>
-                <CardTitle>Upcoming Lessons</CardTitle>
+                <CardTitle className="text-lg sm:text-xl">Upcoming Lessons</CardTitle>
                 <CardDescription>Your lessons for the rest of the week</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {upcomingLessons.map((lesson) => (
-                    <div key={lesson.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={lesson.id} className="flex flex-col lg:flex-row lg:items-center justify-between p-4 border rounded-lg gap-4">
                       <div className="flex items-center space-x-4">
-                        <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg">
+                        <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg flex-shrink-0">
                           <CalendarIcon className="h-6 w-6 text-green-600" />
                         </div>
-                        <div>
-                          <h3 className="font-semibold">{lesson.subject}</h3>
-                          <p className="text-sm text-gray-600">Student: {lesson.student}</p>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-sm sm:text-base">{lesson.subject}</h3>
+                          <p className="text-sm text-gray-600 truncate">Student: {lesson.student}</p>
                           <p className="text-sm text-gray-500">{lesson.date} • {lesson.time}</p>
                           <div className="flex items-center gap-2 mt-1">
                             {lesson.type === "Virtual" ? (
@@ -252,9 +301,23 @@ const TutorSchedule = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex gap-1">
-                        <Button size="sm" variant="outline">Edit</Button>
-                        <Button size="sm" variant="outline">Cancel</Button>
+                      <div className="flex flex-wrap gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="text-xs"
+                          onClick={() => handleEdit(lesson)}
+                        >
+                          Edit
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="text-xs"
+                          onClick={() => handleCancel(lesson)}
+                        >
+                          Cancel
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -265,7 +328,7 @@ const TutorSchedule = () => {
             {/* Weekly Overview */}
             <Card>
               <CardHeader>
-                <CardTitle>Weekly Overview</CardTitle>
+                <CardTitle className="text-lg sm:text-xl">Weekly Overview</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-7 gap-2 text-center">
@@ -288,6 +351,19 @@ const TutorSchedule = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <RescheduleModal
+        isOpen={rescheduleModal.isOpen}
+        onClose={() => setRescheduleModal({ isOpen: false, lesson: null })}
+        lesson={rescheduleModal.lesson}
+      />
+
+      <JoinLessonModal
+        isOpen={joinModal.isOpen}
+        onClose={() => setJoinModal({ isOpen: false, lesson: null })}
+        lesson={joinModal.lesson}
+      />
     </div>
   );
 };
