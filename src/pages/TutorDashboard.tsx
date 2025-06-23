@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,10 +8,13 @@ import StudentProgressModal from "@/components/StudentProgressModal";
 import ScheduleLessonModal from "@/components/ScheduleLessonModal";
 import SendMessageModal from "@/components/SendMessageModal";
 import WithdrawalModal from "@/components/WithdrawalModal";
+import RescheduleModal from "@/components/RescheduleModal";
+import { toast } from "sonner";
 
 const TutorDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [modalType, setModalType] = useState<string>("");
   const [withdrawalType, setWithdrawalType] = useState<"bank" | "mobile">("bank");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -37,14 +39,30 @@ const TutorDashboard = () => {
     total: 8500
   };
 
-  const openModal = (type: string, student?: any) => {
+  const openModal = (type: string, student?: any, lesson?: any) => {
     setSelectedStudent(student);
+    setSelectedLesson(lesson);
     setModalType(type);
   };
 
   const closeModal = () => {
     setModalType("");
     setSelectedStudent(null);
+    setSelectedLesson(null);
+  };
+
+  const handleStartLesson = (lesson: any) => {
+    console.log("Starting lesson:", lesson);
+    toast.success(`Starting ${lesson.subject} lesson with ${lesson.student}!`);
+    
+    // Simulate lesson start - could redirect to lesson interface
+    setTimeout(() => {
+      if (lesson.location === "Virtual") {
+        toast.info("Connecting to virtual classroom...");
+      } else {
+        toast.info("Navigate to student location for home visit");
+      }
+    }, 1000);
   };
 
   const handleProfileClick = () => {
@@ -222,8 +240,21 @@ const TutorDashboard = () => {
                             <p className="text-xs sm:text-sm text-gray-500">{lesson.time} • {lesson.location}</p>
                           </div>
                           <div className="flex gap-2 flex-wrap">
-                            <Button size="sm" variant="outline" className="text-xs flex-1 sm:flex-none">Reschedule</Button>
-                            <Button size="sm" className="text-xs flex-1 sm:flex-none">Start Lesson</Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-xs flex-1 sm:flex-none"
+                              onClick={() => openModal('reschedule', null, lesson)}
+                            >
+                              Reschedule
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              className="text-xs flex-1 sm:flex-none"
+                              onClick={() => handleStartLesson(lesson)}
+                            >
+                              Start Lesson
+                            </Button>
                           </div>
                         </div>
                       ))}
@@ -409,6 +440,14 @@ const TutorDashboard = () => {
           onClose={closeModal}
           type={withdrawalType}
           availableBalance={earnings.thisMonth}
+        />
+      )}
+
+      {modalType === 'reschedule' && selectedLesson && (
+        <RescheduleModal
+          isOpen={true}
+          onClose={closeModal}
+          lesson={selectedLesson}
         />
       )}
     </div>
