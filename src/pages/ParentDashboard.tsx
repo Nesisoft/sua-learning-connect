@@ -92,11 +92,17 @@ const ParentDashboard = () => {
     setSidebarOpen(false);
   };
 
+  const handleChildAdded = (childData: any) => {
+    console.log("Child added:", childData);
+    toast.success("Child added successfully!");
+    closeModal();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center space-x-2">
               <Button
@@ -124,7 +130,7 @@ const ParentDashboard = () => {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="flex gap-4 lg:gap-8">
           {/* Mobile Sidebar Overlay */}
           {sidebarOpen && (
@@ -623,6 +629,8 @@ const ParentDashboard = () => {
         <BookLessonModal
           isOpen={true}
           onClose={closeModal}
+          tutorName="Selected Tutor"
+          rate={60}
         />
       )}
 
@@ -630,6 +638,7 @@ const ParentDashboard = () => {
         <AddChildModal
           isOpen={true}
           onClose={closeModal}
+          onChildAdded={handleChildAdded}
         />
       )}
 
@@ -637,8 +646,6 @@ const ParentDashboard = () => {
         <PaymentModal
           isOpen={true}
           onClose={closeModal}
-          amount={120}
-          description="Mathematics lesson payment"
         />
       )}
 
