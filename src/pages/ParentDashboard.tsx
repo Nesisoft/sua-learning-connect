@@ -10,6 +10,7 @@ import AddChildModal from "@/components/AddChildModal";
 import PaymentModal from "@/components/PaymentModal";
 import RescheduleModal from "@/components/RescheduleModal";
 import { toast } from "sonner";
+import { DollarSign } from "lucide-react";
 
 const ParentDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -201,50 +202,44 @@ const ParentDashboard = () => {
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Parent Dashboard</h1>
                 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-                  <Card>
-                    <CardContent className="p-3 sm:p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center">
-                        <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mb-2 sm:mb-0" />
-                        <div className="sm:ml-4">
-                          <p className="text-xs sm:text-sm font-medium text-gray-600">Children</p>
-                          <p className="text-lg sm:text-2xl font-bold text-gray-900">{children.length}</p>
-                        </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                  <Card className="p-4 bg-blue-50 border-blue-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-blue-600">3</p>
+                        <p className="text-sm text-blue-600">Active Tutors</p>
                       </div>
-                    </CardContent>
+                      <Users className="h-8 w-8 text-blue-600" />
+                    </div>
                   </Card>
-                  <Card>
-                    <CardContent className="p-3 sm:p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center">
-                        <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 mb-2 sm:mb-0" />
-                        <div className="sm:ml-4">
-                          <p className="text-xs sm:text-sm font-medium text-gray-600">This Week</p>
-                          <p className="text-lg sm:text-2xl font-bold text-gray-900">8</p>
-                        </div>
+                  <Card className="p-4 bg-green-50 border-green-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-green-600">5</p>
+                        <p className="text-sm text-green-600">Lessons This Week</p>
                       </div>
-                    </CardContent>
+                      <Calendar className="h-8 w-8 text-green-600" />
+                    </div>
                   </Card>
-                  <Card>
-                    <CardContent className="p-3 sm:p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center">
-                        <Star className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600 mb-2 sm:mb-0" />
-                        <div className="sm:ml-4">
-                          <p className="text-xs sm:text-sm font-medium text-gray-600">Avg Progress</p>
-                          <p className="text-lg sm:text-2xl font-bold text-gray-900">82%</p>
-                        </div>
+                  <Card className="p-4 bg-purple-50 border-purple-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-purple-600">₵1,200</p>
+                        <p className="text-sm text-purple-600">This Month</p>
                       </div>
-                    </CardContent>
+                      <DollarSign className="h-8 w-8 text-purple-600" />
+                    </div>
                   </Card>
-                  <Card>
-                    <CardContent className="p-3 sm:p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center">
-                        <CreditCard className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 mb-2 sm:mb-0" />
-                        <div className="sm:ml-4">
-                          <p className="text-xs sm:text-sm font-medium text-gray-600">This Month</p>
-                          <p className="text-lg sm:text-2xl font-bold text-gray-900">GHS 480</p>
-                        </div>
+                  <Card className="p-4 bg-orange-50 border-orange-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-orange-600">2</p>
+                        <p className="text-sm text-orange-600">New Messages</p>
                       </div>
-                    </CardContent>
+                      <Link to="/messages" state={{ userType: "parent" }}>
+                        <MessageCircle className="h-8 w-8 text-orange-600 cursor-pointer hover:text-orange-700" />
+                      </Link>
+                    </div>
                   </Card>
                 </div>
 

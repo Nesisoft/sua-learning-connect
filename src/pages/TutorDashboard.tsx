@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Calendar, CreditCard, Star, Clock, LogOut, Users, Settings, Menu, X, Video, Phone, MessageSquare, MapPinIcon } from "lucide-react";
+import { BookOpen, Calendar, CreditCard, Star, Clock, LogOut, Users, Settings, Menu, X, Video, Phone, MessageSquare, MapPinIcon, DollarSign, MessageCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import StudentProgressModal from "@/components/StudentProgressModal";
 import ScheduleLessonModal from "@/components/ScheduleLessonModal";
@@ -238,50 +238,44 @@ const TutorDashboard = () => {
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Tutor Dashboard</h1>
                 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-                  <Card>
-                    <CardContent className="p-3 sm:p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center">
-                        <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mb-2 sm:mb-0" />
-                        <div className="sm:ml-4">
-                          <p className="text-xs sm:text-sm font-medium text-gray-600">Active Students</p>
-                          <p className="text-lg sm:text-2xl font-bold text-gray-900">{students.length}</p>
-                        </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                  <Card className="p-4 bg-blue-50 border-blue-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-blue-600">12</p>
+                        <p className="text-sm text-blue-600">Total Students</p>
                       </div>
-                    </CardContent>
+                      <Users className="h-8 w-8 text-blue-600" />
+                    </div>
                   </Card>
-                  <Card>
-                    <CardContent className="p-3 sm:p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center">
-                        <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 mb-2 sm:mb-0" />
-                        <div className="sm:ml-4">
-                          <p className="text-xs sm:text-sm font-medium text-gray-600">This Week</p>
-                          <p className="text-lg sm:text-2xl font-bold text-gray-900">12</p>
-                        </div>
+                  <Card className="p-4 bg-green-50 border-green-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-green-600">8</p>
+                        <p className="text-sm text-green-600">Lessons Today</p>
                       </div>
-                    </CardContent>
+                      <Calendar className="h-8 w-8 text-green-600" />
+                    </div>
                   </Card>
-                  <Card>
-                    <CardContent className="p-3 sm:p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center">
-                        <Star className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600 mb-2 sm:mb-0" />
-                        <div className="sm:ml-4">
-                          <p className="text-xs sm:text-sm font-medium text-gray-600">Rating</p>
-                          <p className="text-lg sm:text-2xl font-bold text-gray-900">4.8</p>
-                        </div>
+                  <Card className="p-4 bg-purple-50 border-purple-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-purple-600">₵2,400</p>
+                        <p className="text-sm text-purple-600">This Month</p>
                       </div>
-                    </CardContent>
+                      <DollarSign className="h-8 w-8 text-purple-600" />
+                    </div>
                   </Card>
-                  <Card>
-                    <CardContent className="p-3 sm:p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center">
-                        <CreditCard className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 mb-2 sm:mb-0" />
-                        <div className="sm:ml-4">
-                          <p className="text-xs sm:text-sm font-medium text-gray-600">This Month</p>
-                          <p className="text-lg sm:text-2xl font-bold text-gray-900">GHS {earnings.thisMonth}</p>
-                        </div>
+                  <Card className="p-4 bg-orange-50 border-orange-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-orange-600">3</p>
+                        <p className="text-sm text-orange-600">New Messages</p>
                       </div>
-                    </CardContent>
+                      <Link to="/messages" state={{ userType: "tutor" }}>
+                        <MessageCircle className="h-8 w-8 text-orange-600 cursor-pointer hover:text-orange-700" />
+                      </Link>
+                    </div>
                   </Card>
                 </div>
 
