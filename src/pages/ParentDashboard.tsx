@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Users, Calendar, CreditCard, Star, MapPin, LogOut, Plus, Search, Clock, Filter, DollarSign, CheckCircle, X, Video, Menu } from "lucide-react";
+import { BookOpen, Users, Calendar, CreditCard, Star, MapPin, LogOut, Plus, Search, Clock, Filter, DollarSign, CheckCircle, X, Video, Menu, Phone, MessageSquare, MapPinIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import StudentProgressModal from "@/components/StudentProgressModal";
 import RequestTutorModal from "@/components/RequestTutorModal";
@@ -16,6 +16,7 @@ import PaymentModal from "@/components/PaymentModal";
 import TutorProfileModal from "@/components/TutorProfileModal";
 import BookLessonModal from "@/components/BookLessonModal";
 import InvoiceModal from "@/components/InvoiceModal";
+import { toast } from "sonner";
 
 const ParentDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -45,6 +46,11 @@ const ParentDashboard = () => {
     { id: 1, name: "Sarah Johnson", grade: "Grade 8", subjects: ["Mathematics", "Science"] },
     { id: 2, name: "Michael Johnson", grade: "Grade 5", subjects: ["English", "Mathematics"] }
   ]);
+
+  const ongoingLessons = [
+    { id: 1, subject: "Mathematics", tutor: "Dr. Kwame Asante", student: "Sarah", location: "Home Visit", startTime: "3:30 PM", status: "In Progress", duration: "45 mins" },
+    { id: 2, subject: "English", tutor: "Ms. Akosua Boateng", student: "Michael", location: "Virtual", startTime: "2:00 PM", status: "In Progress", duration: "60 mins" }
+  ];
 
   const upcomingLessons = [
     { id: 1, subject: "Mathematics", tutor: "Dr. Kwame Asante", time: "Today, 4:00 PM", student: "Sarah", status: "confirmed" },
@@ -187,11 +193,37 @@ const ParentDashboard = () => {
     { id: "payments", label: "Payments", icon: CreditCard }
   ];
 
+  const handleJoinOngoingLesson = (lesson: any) => {
+    console.log("Joining ongoing lesson:", lesson);
+    if (lesson.location === "Virtual") {
+      toast.success(`Joining virtual lesson with ${lesson.tutor}`);
+      // Simulate joining virtual classroom
+      setTimeout(() => {
+        toast.info("Connected to virtual classroom");
+      }, 1000);
+    } else {
+      toast.info("Connecting to home visit tutor...");
+      // For home visits, this could open a call/messaging interface
+    }
+  };
+
+  const handleContactTutor = (lesson: any) => {
+    console.log("Contacting tutor:", lesson);
+    toast.success(`Calling ${lesson.tutor}...`);
+    // This would integrate with phone/messaging system
+  };
+
+  const handleEndLesson = (lesson: any) => {
+    console.log("Ending lesson:", lesson);
+    toast.success(`Lesson with ${lesson.tutor} has been ended`);
+    // This would handle lesson completion logic
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-40">
-        <div className="px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center space-x-2">
               <Button
@@ -219,39 +251,39 @@ const ParentDashboard = () => {
         </div>
       </header>
 
-      <div className="flex">
-        {/* Mobile Sidebar Overlay */}
-        {sidebarOpen && (
-          <div className="fixed inset-0 z-30 bg-gray-600 bg-opacity-50 lg:hidden" onClick={() => setSidebarOpen(false)} />
-        )}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="flex gap-4 lg:gap-8">
+          {/* Mobile Sidebar Overlay */}
+          {sidebarOpen && (
+            <div className="fixed inset-0 z-30 bg-gray-600 bg-opacity-50 lg:hidden" onClick={() => setSidebarOpen(false)} />
+          )}
 
-        {/* Sidebar */}
-        <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:block`}>
-          <div className="flex flex-col h-full pt-16 lg:pt-0">
-            <div className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-              {navigationItems.map((item) => (
-                <Button
-                  key={item.id}
-                  variant={activeTab === item.id ? "default" : "ghost"}
-                  className="w-full justify-start text-sm"
-                  onClick={() => {
-                    setActiveTab(item.id);
-                    setSidebarOpen(false);
-                  }}
-                >
-                  <item.icon className="h-4 w-4 mr-3" />
-                  {item.label}
-                </Button>
-              ))}
+          {/* Sidebar */}
+          <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:bg-transparent lg:border-0 ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } lg:block`}>
+            <div className="flex flex-col h-full pt-16 lg:pt-0">
+              <div className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                {navigationItems.map((item) => (
+                  <Button
+                    key={item.id}
+                    variant={activeTab === item.id ? "default" : "ghost"}
+                    className="w-full justify-start text-sm"
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      setSidebarOpen(false);
+                    }}
+                  >
+                    <item.icon className="h-4 w-4 mr-3" />
+                    {item.label}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Main Content */}
-        <div className="flex-1 lg:ml-0 min-h-screen">
-          <div className="p-4 sm:p-6 lg:p-8">
+          {/* Main Content */}
+          <div className="flex-1 min-w-0">
             {activeTab === "overview" && (
               <div className="space-y-6">
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard Overview</h1>
@@ -303,6 +335,61 @@ const ParentDashboard = () => {
                     </CardContent>
                   </Card>
                 </div>
+
+                {/* Ongoing Lessons */}
+                {ongoingLessons.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg sm:text-xl">Ongoing Lessons</CardTitle>
+                      <CardDescription>Lessons currently in progress</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {ongoingLessons.map((lesson) => (
+                          <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg bg-green-50 border-green-200 space-y-3 sm:space-y-0">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2 mb-2">
+                                <h3 className="font-semibold text-sm sm:text-base">{lesson.subject} - {lesson.student}</h3>
+                                <Badge variant="default" className="bg-green-600 text-xs">
+                                  {lesson.status}
+                                </Badge>
+                              </div>
+                              <p className="text-xs sm:text-sm text-gray-600">with {lesson.tutor}</p>
+                              <div className="flex items-center space-x-4 text-xs sm:text-sm text-gray-500 mt-1">
+                                <span className="flex items-center">
+                                  <Clock className="h-4 w-4 mr-1" />
+                                  Started: {lesson.startTime}
+                                </span>
+                                <span className="flex items-center">
+                                  {lesson.location === "Virtual" ? <Video className="h-4 w-4 mr-1" /> : <MapPinIcon className="h-4 w-4 mr-1" />}
+                                  {lesson.location}
+                                </span>
+                                <span>Duration: {lesson.duration}</span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              {lesson.location === "Virtual" ? (
+                                <Button size="sm" onClick={() => handleJoinOngoingLesson(lesson)} className="w-full sm:w-auto text-xs">
+                                  <Video className="h-4 w-4 mr-1" />
+                                  Join Now
+                                </Button>
+                              ) : (
+                                <Button size="sm" variant="outline" onClick={() => handleContactTutor(lesson)} className="w-full sm:w-auto text-xs">
+                                  <Phone className="h-4 w-4 mr-1" />
+                                  Call Tutor
+                                </Button>
+                              )}
+                              <Button size="sm" variant="outline" onClick={() => handleContactTutor(lesson)} className="w-full sm:w-auto text-xs">
+                                <MessageSquare className="h-4 w-4 mr-1" />
+                                Message
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Upcoming Lessons */}
                 <Card>
