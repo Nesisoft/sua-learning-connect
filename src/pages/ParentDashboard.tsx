@@ -74,9 +74,9 @@ const ParentDashboard = () => {
     }, 1500);
   };
 
-  const handleSendMessage = (lesson: any) => {
-    console.log("Opening chat with tutor:", lesson);
-    navigate('/chat', { state: { recipient: lesson.tutor, type: 'tutor' } });
+  const handleSendMessage = (tutor: any) => {
+    console.log("Opening chat with tutor:", tutor);
+    navigate('/chat', { state: { recipient: tutor.name, userType: 'parent' } });
   };
 
   const handleNavigateToLocation = (lesson: any) => {
@@ -186,7 +186,7 @@ const ParentDashboard = () => {
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => navigate('/chat')}
+                onClick={() => navigate('/chat', { state: { userType: 'parent' } })}
               >
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Messages

@@ -85,7 +85,7 @@ const TutorDashboard = () => {
 
   const handleSendMessage = (lesson: any) => {
     console.log("Opening chat with student:", lesson);
-    navigate('/chat', { state: { recipient: lesson.student, type: 'student' } });
+    navigate('/chat', { state: { recipient: lesson.student, userType: 'tutor' } });
   };
 
   const handleNavigateToLocation = (lesson: any) => {
@@ -223,7 +223,7 @@ const TutorDashboard = () => {
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => navigate('/chat')}
+                onClick={() => navigate('/chat', { state: { userType: 'tutor' } })}
               >
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Messages
