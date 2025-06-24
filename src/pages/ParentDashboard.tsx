@@ -630,7 +630,7 @@ const ParentDashboard = () => {
           isOpen={true}
           onClose={closeModal}
           tutorName="Selected Tutor"
-          rate={60}
+          rate="60"
         />
       )}
 
@@ -646,6 +646,12 @@ const ParentDashboard = () => {
         <PaymentModal
           isOpen={true}
           onClose={closeModal}
+          payment={{
+            amount: 120,
+            subject: "Mathematics",
+            tutor: "Dr. Kwame Asante",
+            date: "Today"
+          }}
         />
       )}
 
