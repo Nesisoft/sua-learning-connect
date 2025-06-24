@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Calendar, CreditCard, Star, Clock, LogOut, Users, Settings, Menu, X, Video, Phone, MessageSquare, MapPinIcon, Navigation } from "lucide-react";
+import { BookOpen, Calendar, CreditCard, Star, Clock, LogOut, Users, Settings, Menu, X, Video, Phone, MessageSquare, MapPinIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import StudentProgressModal from "@/components/StudentProgressModal";
 import ScheduleLessonModal from "@/components/ScheduleLessonModal";
@@ -98,18 +98,6 @@ const TutorDashboard = () => {
   const handleContactStudent = (lesson: any) => {
     console.log("Contacting student:", lesson);
     toast.success(`Calling ${lesson.student}...`);
-  };
-
-  const handleNavigateToStudent = (lesson: any) => {
-    console.log("Navigating to student:", lesson);
-    if (lesson.address) {
-      toast.success(`Opening navigation to ${lesson.address}`);
-      // This would integrate with maps/navigation apps
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lesson.address)}`;
-      window.open(mapsUrl, '_blank');
-    } else {
-      toast.error("Address not available");
-    }
   };
 
   const handleEndLesson = (lesson: any) => {
@@ -280,6 +268,9 @@ const TutorDashboard = () => {
                                 <Badge variant="default" className="bg-green-600 text-xs">
                                   {lesson.status}
                                 </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  {lesson.location}
+                                </Badge>
                               </div>
                               <p className="text-xs sm:text-sm text-gray-600">Student: {lesson.student}</p>
                               <div className="flex items-center space-x-4 text-xs sm:text-sm text-gray-500 mt-1">
@@ -304,16 +295,10 @@ const TutorDashboard = () => {
                                   Join Now
                                 </Button>
                               ) : (
-                                <>
-                                  <Button size="sm" variant="outline" onClick={() => handleNavigateToStudent(lesson)} className="w-full sm:w-auto text-xs">
-                                    <Navigation className="h-4 w-4 mr-1" />
-                                    Navigate
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={() => handleContactStudent(lesson)} className="w-full sm:w-auto text-xs">
-                                    <Phone className="h-4 w-4 mr-1" />
-                                    Call
-                                  </Button>
-                                </>
+                                <Button size="sm" variant="outline" onClick={() => handleContactStudent(lesson)} className="w-full sm:w-auto text-xs">
+                                  <Phone className="h-4 w-4 mr-1" />
+                                  Call
+                                </Button>
                               )}
                               <Button size="sm" variant="outline" onClick={() => handleContactStudent(lesson)} className="w-full sm:w-auto text-xs">
                                 <MessageSquare className="h-4 w-4 mr-1" />
@@ -338,25 +323,37 @@ const TutorDashboard = () => {
                       {upcomingLessons.map((lesson) => (
                         <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-sm sm:text-base">{lesson.subject}</h3>
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h3 className="font-semibold text-sm sm:text-base">{lesson.subject}</h3>
+                              <Badge variant="outline" className="text-xs">
+                                {lesson.location}
+                              </Badge>
+                            </div>
                             <p className="text-xs sm:text-sm text-gray-600">Student: {lesson.student}</p>
-                            <p className="text-xs sm:text-sm text-gray-500">{lesson.time} • {lesson.location}</p>
+                            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500 mt-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{lesson.time}</span>
+                              <span className="flex items-center">
+                                {lesson.location === "Virtual" ? <Video className="h-4 w-4 ml-2 mr-1" /> : <MapPinIcon className="h-4 w-4 ml-2 mr-1" />}
+                                {lesson.location}
+                              </span>
+                            </div>
                           </div>
                           <div className="flex gap-2 flex-wrap">
                             <Button 
-                            size="sm" 
-                            variant="outline" 
-                            className="text-xs flex-1 sm:flex-none"
-                            onClick={() => openModal('reschedule', null, lesson)}
+                              size="sm" 
+                              variant="outline" 
+                              className="text-xs flex-1 sm:flex-none"
+                              onClick={() => openModal('reschedule', null, lesson)}
                             >
-                            Reschedule
+                              Reschedule
                             </Button>
                             <Button 
-                            size="sm" 
-                            className="text-xs flex-1 sm:flex-none"
-                            onClick={() => handleStartLesson(lesson)}
+                              size="sm" 
+                              className="text-xs flex-1 sm:flex-none"
+                              onClick={() => handleStartLesson(lesson)}
                             >
-                            Start Lesson
+                              Start Lesson
                             </Button>
                           </div>
                         </div>

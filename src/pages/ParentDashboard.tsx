@@ -52,10 +52,14 @@ const ParentDashboard = () => {
     { id: 2, subject: "English", tutor: "Ms. Akosua Boateng", student: "Michael", location: "Virtual", startTime: "2:00 PM", status: "In Progress", duration: "60 mins" }
   ];
 
+  const todaysLessons = [
+    { id: 1, subject: "Mathematics", tutor: "Dr. Kwame Asante", time: "4:00 PM", student: "Sarah", status: "confirmed", location: "Home Visit" },
+    { id: 2, subject: "Science", tutor: "Prof. Yaw Mensah", time: "6:00 PM", student: "Sarah", status: "confirmed", location: "Virtual" }
+  ];
+
   const upcomingLessons = [
-    { id: 1, subject: "Mathematics", tutor: "Dr. Kwame Asante", time: "Today, 4:00 PM", student: "Sarah", status: "confirmed" },
-    { id: 2, subject: "English", tutor: "Ms. Akosua Boateng", time: "Tomorrow, 2:00 PM", student: "Michael", status: "confirmed" },
-    { id: 3, subject: "Science", tutor: "Prof. Yaw Mensah", time: "Friday, 3:00 PM", student: "Sarah", status: "pending" }
+    { id: 1, subject: "English", tutor: "Ms. Akosua Boateng", time: "Tomorrow, 2:00 PM", student: "Michael", status: "confirmed", location: "Virtual" },
+    { id: 2, subject: "Science", tutor: "Prof. Yaw Mensah", time: "Friday, 3:00 PM", student: "Sarah", status: "pending", location: "Home Visit" }
   ];
 
   const tutorRequests = [
@@ -154,9 +158,17 @@ const ParentDashboard = () => {
     setShowRescheduleModal(true);
   };
 
-  const handleJoinLesson = (lesson: any) => {
-    setSelectedLesson(lesson);
-    setShowJoinLessonModal(true);
+  const handleStartLesson = (lesson: any) => {
+    console.log("Starting lesson:", lesson);
+    toast.success(`Starting ${lesson.subject} lesson with ${lesson.tutor}!`);
+    
+    setTimeout(() => {
+      if (lesson.location === "Virtual") {
+        toast.info("Connecting to virtual classroom...");
+      } else {
+        toast.info("Tutor will arrive shortly for home visit");
+      }
+    }, 1000);
   };
 
   const handleMakePayment = (payment: any) => {
@@ -197,26 +209,22 @@ const ParentDashboard = () => {
     console.log("Joining ongoing lesson:", lesson);
     if (lesson.location === "Virtual") {
       toast.success(`Joining virtual lesson with ${lesson.tutor}`);
-      // Simulate joining virtual classroom
       setTimeout(() => {
         toast.info("Connected to virtual classroom");
       }, 1000);
     } else {
       toast.info("Connecting to home visit tutor...");
-      // For home visits, this could open a call/messaging interface
     }
   };
 
   const handleContactTutor = (lesson: any) => {
     console.log("Contacting tutor:", lesson);
     toast.success(`Calling ${lesson.tutor}...`);
-    // This would integrate with phone/messaging system
   };
 
   const handleEndLesson = (lesson: any) => {
     console.log("Ending lesson:", lesson);
     toast.success(`Lesson with ${lesson.tutor} has been ended`);
-    // This would handle lesson completion logic
   };
 
   return (
@@ -353,6 +361,9 @@ const ParentDashboard = () => {
                                 <Badge variant="default" className="bg-green-600 text-xs">
                                   {lesson.status}
                                 </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  {lesson.location}
+                                </Badge>
                               </div>
                               <p className="text-xs sm:text-sm text-gray-600">with {lesson.tutor}</p>
                               <div className="flex items-center space-x-4 text-xs sm:text-sm text-gray-500 mt-1">
@@ -391,6 +402,56 @@ const ParentDashboard = () => {
                   </Card>
                 )}
 
+                {/* Today's Lessons */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg sm:text-xl">Today's Lessons</CardTitle>
+                    <CardDescription>Your children's lessons scheduled for today</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {todaysLessons.map((lesson) => (
+                        <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg space-y-3 sm:space-y-0">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h3 className="font-semibold text-sm sm:text-base">{lesson.subject} - {lesson.student}</h3>
+                              <Badge variant="outline" className="text-xs">
+                                {lesson.location}
+                              </Badge>
+                            </div>
+                            <p className="text-xs sm:text-sm text-gray-600">with {lesson.tutor}</p>
+                            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500 mt-1">
+                              <Clock className="h-4 w-4" />
+                              <span>Today, {lesson.time}</span>
+                              <span className="flex items-center">
+                                {lesson.location === "Virtual" ? <Video className="h-4 w-4 ml-2 mr-1" /> : <MapPinIcon className="h-4 w-4 ml-2 mr-1" />}
+                                {lesson.location}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 flex-wrap">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-xs flex-1 sm:flex-none"
+                              onClick={() => handleRescheduleLesson(lesson)}
+                            >
+                              Reschedule
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              className="text-xs flex-1 sm:flex-none"
+                              onClick={() => handleStartLesson(lesson)}
+                            >
+                              Start Lesson
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Upcoming Lessons */}
                 <Card>
                   <CardHeader>
@@ -402,14 +463,39 @@ const ParentDashboard = () => {
                       {upcomingLessons.map((lesson) => (
                         <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg space-y-3 sm:space-y-0">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-sm sm:text-base">{lesson.subject} - {lesson.student}</h3>
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h3 className="font-semibold text-sm sm:text-base">{lesson.subject} - {lesson.student}</h3>
+                              <Badge variant="outline" className="text-xs">
+                                {lesson.location}
+                              </Badge>
+                            </div>
                             <p className="text-xs sm:text-sm text-gray-600">with {lesson.tutor}</p>
-                            <p className="text-xs sm:text-sm text-gray-500">{lesson.time}</p>
+                            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500 mt-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{lesson.time}</span>
+                              <span className="flex items-center">
+                                {lesson.location === "Virtual" ? <Video className="h-4 w-4 ml-2 mr-1" /> : <MapPinIcon className="h-4 w-4 ml-2 mr-1" />}
+                                {lesson.location}
+                              </span>
+                            </div>
                           </div>
-                          <Button size="sm" onClick={() => handleJoinLesson(lesson)} className="w-full sm:w-auto">
-                            <Video className="h-4 w-4 mr-1" />
-                            Join Lesson
-                          </Button>
+                          <div className="flex gap-2 flex-wrap">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-xs flex-1 sm:flex-none"
+                              onClick={() => handleRescheduleLesson(lesson)}
+                            >
+                              Reschedule
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              className="text-xs flex-1 sm:flex-none"
+                              onClick={() => handleStartLesson(lesson)}
+                            >
+                              Start Lesson
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -644,7 +730,7 @@ const ParentDashboard = () => {
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Lessons Schedule</h1>
                 
                 <div className="grid gap-4 sm:gap-6">
-                  {upcomingLessons.map((lesson) => (
+                  {[...todaysLessons, ...upcomingLessons].map((lesson) => (
                     <Card key={lesson.id}>
                       <CardContent className="p-4 sm:p-6">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
@@ -653,7 +739,12 @@ const ParentDashboard = () => {
                               <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                             </div>
                             <div>
-                              <h3 className="font-semibold text-base sm:text-lg">{lesson.subject}</h3>
+                              <div className="flex items-center space-x-2 mb-1">
+                                <h3 className="font-semibold text-base sm:text-lg">{lesson.subject}</h3>
+                                <Badge variant="outline" className="text-xs">
+                                  {lesson.location}
+                                </Badge>
+                              </div>
                               <p className="text-xs sm:text-sm text-gray-600">with {lesson.tutor}</p>
                               <p className="text-xs sm:text-sm text-gray-500">Student: {lesson.student}</p>
                             </div>
@@ -672,9 +763,8 @@ const ParentDashboard = () => {
                           <Button size="sm" variant="outline" onClick={() => handleRescheduleLesson(lesson)} className="w-full sm:w-auto text-xs">
                             Reschedule
                           </Button>
-                          <Button size="sm" onClick={() => handleJoinLesson(lesson)} className="w-full sm:w-auto text-xs">
-                            <Video className="h-4 w-4 mr-1" />
-                            Join Lesson
+                          <Button size="sm" onClick={() => handleStartLesson(lesson)} className="w-full sm:w-auto text-xs">
+                            Start Lesson
                           </Button>
                         </div>
                       </CardContent>
