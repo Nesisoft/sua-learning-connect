@@ -2,255 +2,120 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Users, Calendar, CreditCard, Star, MapPin, LogOut, Plus, Search, Clock, Filter, DollarSign, CheckCircle, X, Video, Menu, Phone, MessageSquare, MapPinIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { BookOpen, Calendar, CreditCard, Star, Clock, LogOut, Users, Settings, Menu, X, Video, Phone, MessageSquare, MapPinIcon, Plus } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import StudentProgressModal from "@/components/StudentProgressModal";
-import RequestTutorModal from "@/components/RequestTutorModal";
-import AddChildModal from "@/components/AddChildModal";
-import RescheduleModal from "@/components/RescheduleModal";
-import JoinLessonModal from "@/components/JoinLessonModal";
-import PaymentModal from "@/components/PaymentModal";
-import TutorProfileModal from "@/components/TutorProfileModal";
 import BookLessonModal from "@/components/BookLessonModal";
-import InvoiceModal from "@/components/InvoiceModal";
+import AddChildModal from "@/components/AddChildModal";
+import PaymentModal from "@/components/PaymentModal";
+import RescheduleModal from "@/components/RescheduleModal";
 import { toast } from "sonner";
 
 const ParentDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedChild, setSelectedChild] = useState<any>(null);
-  const [showProgressModal, setShowProgressModal] = useState(false);
-  const [showRequestModal, setShowRequestModal] = useState(false);
-  const [showAddChildModal, setShowAddChildModal] = useState(false);
-  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
-  const [showJoinLessonModal, setShowJoinLessonModal] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
-  const [selectedPayment, setSelectedPayment] = useState<any>(null);
+  const [modalType, setModalType] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showTutorProfileModal, setShowTutorProfileModal] = useState(false);
-  const [showBookLessonModal, setShowBookLessonModal] = useState(false);
-  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
-  const [selectedTutor, setSelectedTutor] = useState<any>(null);
-  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
-
-  // Filter states
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const navigate = useNavigate();
 
   // Mock data
-  const [children, setChildren] = useState([
-    { id: 1, name: "Sarah Johnson", grade: "Grade 8", subjects: ["Mathematics", "Science"] },
-    { id: 2, name: "Michael Johnson", grade: "Grade 5", subjects: ["English", "Mathematics"] }
-  ]);
-
   const ongoingLessons = [
-    { id: 1, subject: "Mathematics", tutor: "Dr. Kwame Asante", student: "Sarah", location: "Home Visit", startTime: "3:30 PM", status: "In Progress", duration: "45 mins" },
-    { id: 2, subject: "English", tutor: "Ms. Akosua Boateng", student: "Michael", location: "Virtual", startTime: "2:00 PM", status: "In Progress", duration: "60 mins" }
+    { id: 1, subject: "Mathematics", child: "Emma Johnson", tutor: "Dr. Kwame Asante", location: "Home Visit", startTime: "3:30 PM", status: "In Progress", duration: "45 mins", address: "123 Elm Street, Accra" },
+    { id: 2, subject: "Physics", child: "James Johnson", tutor: "Prof. Sarah Mensah", location: "Virtual", startTime: "2:00 PM", status: "In Progress", duration: "60 mins" }
   ];
 
   const todaysLessons = [
-    { id: 1, subject: "Mathematics", tutor: "Dr. Kwame Asante", time: "4:00 PM", student: "Sarah", status: "confirmed", location: "Home Visit" },
-    { id: 2, subject: "Science", tutor: "Prof. Yaw Mensah", time: "6:00 PM", student: "Sarah", status: "confirmed", location: "Virtual" }
+    { id: 1, subject: "Mathematics", child: "Emma Johnson", tutor: "Dr. Kwame Asante", time: "Today, 4:00 PM", location: "Home Visit", address: "123 Elm Street, Accra" },
+    { id: 2, subject: "Physics", child: "James Johnson", tutor: "Prof. Sarah Mensah", time: "Today, 6:00 PM", location: "Virtual" }
   ];
 
   const upcomingLessons = [
-    { id: 1, subject: "English", tutor: "Ms. Akosua Boateng", time: "Tomorrow, 2:00 PM", student: "Michael", status: "confirmed", location: "Virtual" },
-    { id: 2, subject: "Science", tutor: "Prof. Yaw Mensah", time: "Friday, 3:00 PM", student: "Sarah", status: "pending", location: "Home Visit" }
+    { id: 1, subject: "Mathematics", child: "Emma Johnson", tutor: "Dr. Kwame Asante", time: "Tomorrow, 10:00 AM", location: "Home Visit", address: "456 Oak Avenue, Kumasi" },
+    { id: 2, subject: "Physics", child: "James Johnson", tutor: "Prof. Sarah Mensah", time: "Wednesday, 2:00 PM", location: "Virtual" },
+    { id: 3, subject: "Chemistry", child: "Emma Johnson", tutor: "Dr. Michael Ofori", time: "Thursday, 4:00 PM", location: "Home Visit", address: "789 Pine Street, Tamale" }
   ];
 
-  const tutorRequests = [
-    { id: 1, subject: "Physics", grade: "Grade 8", status: "Pending", matches: 3 },
-    { id: 2, subject: "French", grade: "Grade 5", status: "In Review", matches: 1 }
+  const children = [
+    { id: 1, name: "Emma Johnson", grade: "Grade 8", subjects: ["Mathematics", "Science"], progress: 85, avatar: "/placeholder.svg" },
+    { id: 2, name: "James Johnson", grade: "Grade 10", subjects: ["Physics", "Chemistry"], progress: 78, avatar: "/placeholder.svg" }
   ];
 
-  const payments = [
-    { id: 1, date: "2024-01-15", tutor: "Dr. Kwame Asante", subject: "Mathematics", amount: 120, status: "paid" },
-    { id: 2, date: "2024-01-10", tutor: "Ms. Akosua Boateng", subject: "English", amount: 90, status: "paid" },
-    { id: 3, date: "2024-01-05", tutor: "Prof. Yaw Mensah", subject: "Science", amount: 150, status: "pending" }
-  ];
-
-  const allTutors = [
-    {
-      id: 1,
-      name: "Dr. Kwame Asante",
-      subjects: ["Mathematics", "Physics"],
-      rating: 4.9,
-      reviews: 45,
-      experience: "8 years",
-      location: "Accra",
-      rate: "GHS 80/hour",
-      availability: "Available"
-    },
-    {
-      id: 2,
-      name: "Ms. Akosua Boateng",
-      subjects: ["English", "Literature"],
-      rating: 4.8,
-      reviews: 32,
-      experience: "5 years",
-      location: "Kumasi",
-      rate: "GHS 60/hour",
-      availability: "Available"
-    },
-    {
-      id: 3,
-      name: "Prof. Yaw Mensah",
-      subjects: ["Chemistry", "Biology", "Science"],
-      rating: 4.7,
-      reviews: 28,
-      experience: "12 years",
-      location: "Tema",
-      rate: "GHS 90/hour",
-      availability: "Busy"
-    },
-    {
-      id: 4,
-      name: "Dr. Ama Adjei",
-      subjects: ["Mathematics", "Statistics"],
-      rating: 4.9,
-      reviews: 52,
-      experience: "10 years",
-      location: "Accra",
-      rate: "GHS 85/hour",
-      availability: "Available"
-    }
-  ];
-
-  // Filter tutors based on search term, subject, and location
-  const filteredTutors = allTutors.filter(tutor => {
-    const matchesSearch = searchTerm === "" || 
-      tutor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tutor.subjects.some(subject => subject.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesSubject = selectedSubject === "" || selectedSubject === "all" ||
-      tutor.subjects.some(subject => subject.toLowerCase() === selectedSubject.toLowerCase());
-    
-    const matchesLocation = selectedLocation === "" || selectedLocation === "all" ||
-      tutor.location.toLowerCase() === selectedLocation.toLowerCase();
-
-    return matchesSearch && matchesSubject && matchesLocation;
-  });
-
-  const handleViewProgress = (child: any) => {
-    setSelectedChild({
-      ...child,
-      subject: child.subjects[0] || "Mathematics",
-      progress: Math.floor(Math.random() * 40) + 60
-    });
-    setShowProgressModal(true);
-  };
-
-  const handleRequestTutor = (child: any) => {
+  const openModal = (type: string, child?: any, lesson?: any) => {
     setSelectedChild(child);
-    setShowRequestModal(true);
-  };
-
-  const handleAddChild = (newChild: any) => {
-    setChildren(prev => [...prev, newChild]);
-  };
-
-  const handleRescheduleLesson = (lesson: any) => {
     setSelectedLesson(lesson);
-    setShowRescheduleModal(true);
+    setModalType(type);
+  };
+
+  const closeModal = () => {
+    setModalType("");
+    setSelectedChild(null);
+    setSelectedLesson(null);
   };
 
   const handleStartLesson = (lesson: any) => {
     console.log("Starting lesson:", lesson);
-    toast.success(`Starting ${lesson.subject} lesson with ${lesson.tutor}!`);
+    toast.success(`Starting ${lesson.subject} lesson for ${lesson.child}!`);
     
     setTimeout(() => {
       if (lesson.location === "Virtual") {
         toast.info("Connecting to virtual classroom...");
       } else {
-        toast.info("Tutor will arrive shortly for home visit");
+        toast.info("Tutor is on the way to your location");
       }
     }, 1000);
   };
 
-  const handleMakePayment = (payment: any) => {
-    setSelectedPayment(payment);
-    setShowPaymentModal(true);
-  };
-
-  const handleViewTutorProfile = (tutor: any) => {
-    setSelectedTutor(tutor);
-    setShowTutorProfileModal(true);
-  };
-
-  const handleBookTutorLesson = (tutor: any) => {
-    setSelectedTutor(tutor);
-    setShowBookLessonModal(true);
-  };
-
-  const handleViewInvoice = (payment: any) => {
-    setSelectedInvoice(payment);
-    setShowInvoiceModal(true);
-  };
-
-  const clearFilters = () => {
-    setSearchTerm("");
-    setSelectedSubject("");
-    setSelectedLocation("");
-  };
-
-  const navigationItems = [
-    { id: "overview", label: "Overview", icon: Users },
-    { id: "children", label: "My Children", icon: Users },
-    { id: "tutors", label: "Find Tutors", icon: Search },
-    { id: "lessons", label: "Lessons", icon: Calendar },
-    { id: "payments", label: "Payments", icon: CreditCard }
-  ];
-
-  const handleJoinOngoingLesson = (lesson: any) => {
-    console.log("Joining ongoing lesson:", lesson);
-    if (lesson.location === "Virtual") {
-      toast.success(`Joining virtual lesson with ${lesson.tutor}`);
-      setTimeout(() => {
-        toast.info("Connected to virtual classroom");
-      }, 1000);
-    } else {
-      toast.info("Connecting to home visit tutor...");
-    }
-  };
-
-  const handleContactTutor = (lesson: any) => {
-    console.log("Contacting tutor:", lesson);
+  const handleCallTutor = (lesson: any) => {
+    console.log("Calling tutor:", lesson);
     toast.success(`Calling ${lesson.tutor}...`);
+    setTimeout(() => {
+      toast.info("Call connected successfully");
+    }, 1500);
   };
 
-  const handleEndLesson = (lesson: any) => {
-    console.log("Ending lesson:", lesson);
-    toast.success(`Lesson with ${lesson.tutor} has been ended`);
+  const handleSendMessage = (lesson: any) => {
+    console.log("Opening chat with tutor:", lesson);
+    navigate('/chat', { state: { recipient: lesson.tutor, type: 'tutor' } });
+  };
+
+  const handleNavigateToLocation = (lesson: any) => {
+    console.log("Navigating to location:", lesson);
+    toast.success(`Opening navigation to lesson location`);
+    setTimeout(() => {
+      toast.info("GPS navigation started");
+    }, 1000);
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setSidebarOpen(false);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-40">
+      <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center space-x-2">
               <Button
                 variant="ghost"
                 size="sm"
-                className="lg:hidden"
+                className="lg:hidden mr-2"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
               >
-                <Menu className="h-5 w-5" />
+                {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
               <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
-              <span className="text-xl sm:text-2xl font-bold text-gray-900">Sua</span>
-              <Badge variant="outline" className="hidden sm:inline-flex">Parent</Badge>
+              <span className="text-lg sm:text-2xl font-bold text-gray-900">Sua</span>
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 text-xs">Parent</Badge>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <span className="text-sm sm:text-base text-gray-700 hidden sm:block">Welcome, John Johnson</span>
+              <span className="hidden sm:block text-gray-700 text-sm">Mrs. Johnson</span>
               <Link to="/login">
                 <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
-                  <LogOut className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <LogOut className="h-4 w-4 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Logout</span>
                 </Button>
               </Link>
@@ -263,46 +128,79 @@ const ParentDashboard = () => {
         <div className="flex gap-4 lg:gap-8">
           {/* Mobile Sidebar Overlay */}
           {sidebarOpen && (
-            <div className="fixed inset-0 z-30 bg-gray-600 bg-opacity-50 lg:hidden" onClick={() => setSidebarOpen(false)} />
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
           )}
 
           {/* Sidebar */}
-          <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:bg-transparent lg:border-0 ${
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } lg:block`}>
-            <div className="flex flex-col h-full pt-16 lg:pt-0">
-              <div className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-                {navigationItems.map((item) => (
-                  <Button
-                    key={item.id}
-                    variant={activeTab === item.id ? "default" : "ghost"}
-                    className="w-full justify-start text-sm"
-                    onClick={() => {
-                      setActiveTab(item.id);
-                      setSidebarOpen(false);
-                    }}
-                  >
-                    <item.icon className="h-4 w-4 mr-3" />
-                    {item.label}
-                  </Button>
-                ))}
-              </div>
+          <div className={`
+            fixed inset-y-0 left-0 z-50 w-64 bg-white border-r transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:bg-transparent lg:border-0
+            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          `}>
+            <div className="p-4 space-y-2 pt-20 lg:pt-0">
+              <Button
+                variant={activeTab === "overview" ? "default" : "ghost"}
+                className="w-full justify-start text-sm"
+                onClick={() => handleTabChange("overview")}
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Overview
+              </Button>
+              <Button
+                variant={activeTab === "children" ? "default" : "ghost"}
+                className="w-full justify-start text-sm"
+                onClick={() => handleTabChange("children")}
+              >
+                <Users className="h-4 w-4 mr-2" />
+                My Children
+              </Button>
+              <Button
+                variant={activeTab === "schedule" ? "default" : "ghost"}
+                className="w-full justify-start text-sm"
+                onClick={() => handleTabChange("schedule")}
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Schedule
+              </Button>
+              <Button
+                variant={activeTab === "payments" ? "default" : "ghost"}
+                className="w-full justify-start text-sm"
+                onClick={() => handleTabChange("payments")}
+              >
+                <CreditCard className="h-4 w-4 mr-2" />
+                Payments
+              </Button>
+              <Button
+                variant={activeTab === "profile" ? "default" : "ghost"}
+                className="w-full justify-start text-sm"
+                onClick={() => handleTabChange("profile")}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Profile
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-sm"
+                onClick={() => navigate('/chat')}
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Messages
+              </Button>
             </div>
           </div>
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">
             {activeTab === "overview" && (
-              <div className="space-y-6">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+              <div className="space-y-4 sm:space-y-6">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Parent Dashboard</h1>
                 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                   <Card>
-                    <CardContent className="p-4 sm:p-6">
-                      <div className="flex items-center">
-                        <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
-                        <div className="ml-3 sm:ml-4">
+                    <CardContent className="p-3 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center">
+                        <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mb-2 sm:mb-0" />
+                        <div className="sm:ml-4">
                           <p className="text-xs sm:text-sm font-medium text-gray-600">Children</p>
                           <p className="text-lg sm:text-2xl font-bold text-gray-900">{children.length}</p>
                         </div>
@@ -310,10 +208,10 @@ const ParentDashboard = () => {
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-4 sm:p-6">
-                      <div className="flex items-center">
-                        <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
-                        <div className="ml-3 sm:ml-4">
+                    <CardContent className="p-3 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center">
+                        <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 mb-2 sm:mb-0" />
+                        <div className="sm:ml-4">
                           <p className="text-xs sm:text-sm font-medium text-gray-600">This Week</p>
                           <p className="text-lg sm:text-2xl font-bold text-gray-900">8</p>
                         </div>
@@ -321,23 +219,23 @@ const ParentDashboard = () => {
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-4 sm:p-6">
-                      <div className="flex items-center">
-                        <Star className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
-                        <div className="ml-3 sm:ml-4">
-                          <p className="text-xs sm:text-sm font-medium text-gray-600">Active Tutors</p>
-                          <p className="text-lg sm:text-2xl font-bold text-gray-900">3</p>
+                    <CardContent className="p-3 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center">
+                        <Star className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600 mb-2 sm:mb-0" />
+                        <div className="sm:ml-4">
+                          <p className="text-xs sm:text-sm font-medium text-gray-600">Avg Progress</p>
+                          <p className="text-lg sm:text-2xl font-bold text-gray-900">82%</p>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-4 sm:p-6">
-                      <div className="flex items-center">
-                        <CreditCard className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600" />
-                        <div className="ml-3 sm:ml-4">
+                    <CardContent className="p-3 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center">
+                        <CreditCard className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 mb-2 sm:mb-0" />
+                        <div className="sm:ml-4">
                           <p className="text-xs sm:text-sm font-medium text-gray-600">This Month</p>
-                          <p className="text-lg sm:text-2xl font-bold text-gray-900">GHS 450</p>
+                          <p className="text-lg sm:text-2xl font-bold text-gray-900">GHS 480</p>
                         </div>
                       </div>
                     </CardContent>
@@ -349,48 +247,42 @@ const ParentDashboard = () => {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg sm:text-xl">Ongoing Lessons</CardTitle>
-                      <CardDescription>Lessons currently in progress</CardDescription>
+                      <CardDescription className="text-sm">Lessons currently in progress</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         {ongoingLessons.map((lesson) => (
-                          <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg bg-green-50 border-green-200 space-y-3 sm:space-y-0">
+                          <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg bg-green-50 border-green-200 space-y-3 sm:space-y-0">
                             <div className="flex-1">
                               <div className="flex items-center space-x-2 mb-2">
-                                <h3 className="font-semibold text-sm sm:text-base">{lesson.subject} - {lesson.student}</h3>
+                                <h3 className="font-semibold text-sm sm:text-base">{lesson.subject}</h3>
                                 <Badge variant="default" className="bg-green-600 text-xs">
                                   {lesson.status}
                                 </Badge>
                                 <Badge variant="outline" className="text-xs">
+                                  {lesson.location === "Virtual" ? <Video className="h-3 w-3 mr-1" /> : <MapPinIcon className="h-3 w-3 mr-1" />}
                                   {lesson.location}
                                 </Badge>
                               </div>
-                              <p className="text-xs sm:text-sm text-gray-600">with {lesson.tutor}</p>
+                              <p className="text-xs sm:text-sm text-gray-600">Child: {lesson.child}</p>
+                              <p className="text-xs sm:text-sm text-gray-600">Tutor: {lesson.tutor}</p>
                               <div className="flex items-center space-x-4 text-xs sm:text-sm text-gray-500 mt-1">
                                 <span className="flex items-center">
                                   <Clock className="h-4 w-4 mr-1" />
                                   Started: {lesson.startTime}
                                 </span>
-                                <span className="flex items-center">
-                                  {lesson.location === "Virtual" ? <Video className="h-4 w-4 mr-1" /> : <MapPinIcon className="h-4 w-4 mr-1" />}
-                                  {lesson.location}
-                                </span>
                                 <span>Duration: {lesson.duration}</span>
                               </div>
+                              {lesson.address && (
+                                <p className="text-xs text-gray-500 mt-1">Address: {lesson.address}</p>
+                              )}
                             </div>
                             <div className="flex flex-col sm:flex-row gap-2">
-                              {lesson.location === "Virtual" ? (
-                                <Button size="sm" onClick={() => handleJoinOngoingLesson(lesson)} className="w-full sm:w-auto text-xs">
-                                  <Video className="h-4 w-4 mr-1" />
-                                  Join Now
-                                </Button>
-                              ) : (
-                                <Button size="sm" variant="outline" onClick={() => handleContactTutor(lesson)} className="w-full sm:w-auto text-xs">
-                                  <Phone className="h-4 w-4 mr-1" />
-                                  Call Tutor
-                                </Button>
-                              )}
-                              <Button size="sm" variant="outline" onClick={() => handleContactTutor(lesson)} className="w-full sm:w-auto text-xs">
+                              <Button size="sm" variant="outline" onClick={() => handleCallTutor(lesson)} className="w-full sm:w-auto text-xs">
+                                <Phone className="h-4 w-4 mr-1" />
+                                Call Tutor
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => handleSendMessage(lesson)} className="w-full sm:w-auto text-xs">
                                 <MessageSquare className="h-4 w-4 mr-1" />
                                 Message
                               </Button>
@@ -406,35 +298,36 @@ const ParentDashboard = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg sm:text-xl">Today's Lessons</CardTitle>
-                    <CardDescription>Your children's lessons scheduled for today</CardDescription>
+                    <CardDescription className="text-sm">Your scheduled lessons for today</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {todaysLessons.map((lesson) => (
-                        <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg space-y-3 sm:space-y-0">
+                        <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0">
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-2">
-                              <h3 className="font-semibold text-sm sm:text-base">{lesson.subject} - {lesson.student}</h3>
+                              <h3 className="font-semibold text-sm sm:text-base">{lesson.subject}</h3>
                               <Badge variant="outline" className="text-xs">
+                                {lesson.location === "Virtual" ? <Video className="h-3 w-3 mr-1" /> : <MapPinIcon className="h-3 w-3 mr-1" />}
                                 {lesson.location}
                               </Badge>
                             </div>
-                            <p className="text-xs sm:text-sm text-gray-600">with {lesson.tutor}</p>
+                            <p className="text-xs sm:text-sm text-gray-600">Child: {lesson.child}</p>
+                            <p className="text-xs sm:text-sm text-gray-600">Tutor: {lesson.tutor}</p>
                             <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500 mt-1">
                               <Clock className="h-4 w-4" />
-                              <span>Today, {lesson.time}</span>
-                              <span className="flex items-center">
-                                {lesson.location === "Virtual" ? <Video className="h-4 w-4 ml-2 mr-1" /> : <MapPinIcon className="h-4 w-4 ml-2 mr-1" />}
-                                {lesson.location}
-                              </span>
+                              <span>{lesson.time}</span>
                             </div>
+                            {lesson.address && (
+                              <p className="text-xs text-gray-500 mt-1">Address: {lesson.address}</p>
+                            )}
                           </div>
                           <div className="flex gap-2 flex-wrap">
                             <Button 
                               size="sm" 
                               variant="outline" 
                               className="text-xs flex-1 sm:flex-none"
-                              onClick={() => handleRescheduleLesson(lesson)}
+                              onClick={() => openModal('reschedule', null, lesson)}
                             >
                               Reschedule
                             </Button>
@@ -456,44 +349,38 @@ const ParentDashboard = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg sm:text-xl">Upcoming Lessons</CardTitle>
-                    <CardDescription>Your children's scheduled lessons</CardDescription>
+                    <CardDescription className="text-sm">Your scheduled lessons for the coming days</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {upcomingLessons.map((lesson) => (
-                        <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg space-y-3 sm:space-y-0">
+                        <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0">
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-2">
-                              <h3 className="font-semibold text-sm sm:text-base">{lesson.subject} - {lesson.student}</h3>
+                              <h3 className="font-semibold text-sm sm:text-base">{lesson.subject}</h3>
                               <Badge variant="outline" className="text-xs">
+                                {lesson.location === "Virtual" ? <Video className="h-3 w-3 mr-1" /> : <MapPinIcon className="h-3 w-3 mr-1" />}
                                 {lesson.location}
                               </Badge>
                             </div>
-                            <p className="text-xs sm:text-sm text-gray-600">with {lesson.tutor}</p>
+                            <p className="text-xs sm:text-sm text-gray-600">Child: {lesson.child}</p>
+                            <p className="text-xs sm:text-sm text-gray-600">Tutor: {lesson.tutor}</p>
                             <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500 mt-1">
                               <Clock className="h-4 w-4" />
                               <span>{lesson.time}</span>
-                              <span className="flex items-center">
-                                {lesson.location === "Virtual" ? <Video className="h-4 w-4 ml-2 mr-1" /> : <MapPinIcon className="h-4 w-4 ml-2 mr-1" />}
-                                {lesson.location}
-                              </span>
                             </div>
+                            {lesson.address && (
+                              <p className="text-xs text-gray-500 mt-1">Address: {lesson.address}</p>
+                            )}
                           </div>
                           <div className="flex gap-2 flex-wrap">
                             <Button 
                               size="sm" 
                               variant="outline" 
                               className="text-xs flex-1 sm:flex-none"
-                              onClick={() => handleRescheduleLesson(lesson)}
+                              onClick={() => openModal('reschedule', null, lesson)}
                             >
                               Reschedule
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              className="text-xs flex-1 sm:flex-none"
-                              onClick={() => handleStartLesson(lesson)}
-                            >
-                              Start Lesson
                             </Button>
                           </div>
                         </div>
@@ -502,25 +389,26 @@ const ParentDashboard = () => {
                   </CardContent>
                 </Card>
 
-                {/* Tutor Requests */}
+                {/* Quick Actions */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg sm:text-xl">Tutor Requests</CardTitle>
-                    <CardDescription>Your active requests for tutors</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl">Quick Actions</CardTitle>
+                    <CardDescription className="text-sm">Common tasks and shortcuts</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      {tutorRequests.map((request) => (
-                        <div key={request.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg space-y-3 sm:space-y-0">
-                          <div>
-                            <h3 className="font-semibold text-sm sm:text-base">{request.subject} - {request.grade}</h3>
-                            <p className="text-xs sm:text-sm text-gray-600">{request.matches} tutor matches found</p>
-                          </div>
-                          <Badge variant={request.status === "Pending" ? "secondary" : "default"} className="w-fit">
-                            {request.status}
-                          </Badge>
-                        </div>
-                      ))}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <Button onClick={() => navigate('/find-tutors')} className="h-20 flex-col space-y-2 text-sm">
+                        <Users className="h-6 w-6" />
+                        <span>Find Tutors</span>
+                      </Button>
+                      <Button variant="outline" onClick={() => openModal('book')} className="h-20 flex-col space-y-2 text-sm">
+                        <Calendar className="h-6 w-6" />
+                        <span>Book Lesson</span>
+                      </Button>
+                      <Button variant="outline" onClick={() => openModal('add-child')} className="h-20 flex-col space-y-2 text-sm">
+                        <Plus className="h-6 w-6" />
+                        <span>Add Child</span>
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -528,36 +416,38 @@ const ParentDashboard = () => {
             )}
 
             {activeTab === "children" && (
-              <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+              <div className="space-y-4 sm:space-y-6">
+                <div className="flex justify-between items-center">
                   <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Children</h1>
-                  <Button onClick={() => setShowAddChildModal(true)} className="w-full sm:w-auto">
+                  <Button onClick={() => openModal('add-child')} className="text-sm">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Child
                   </Button>
                 </div>
                 
-                <div className="grid gap-6">
+                <div className="grid gap-4 sm:gap-6">
                   {children.map((child) => (
                     <Card key={child.id}>
                       <CardHeader>
-                        <CardTitle className="text-lg sm:text-xl">{child.name}</CardTitle>
-                        <CardDescription>{child.grade}</CardDescription>
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-2 sm:space-y-0">
+                          <div>
+                            <CardTitle className="text-lg sm:text-xl">{child.name}</CardTitle>
+                            <CardDescription className="text-sm">{child.grade} • {child.subjects.join(", ")}</CardDescription>
+                          </div>
+                          <Badge variant="outline" className="text-xs self-start">Progress: {child.progress}%</Badge>
+                        </div>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-4">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-2">Current Subjects</p>
-                            <div className="flex flex-wrap gap-2">
-                              {child.subjects.length > 0 ? child.subjects.map((subject) => (
-                                <Badge key={subject} variant="outline" className="text-xs">{subject}</Badge>
-                              )) : <span className="text-gray-500 text-sm">No subjects added yet</span>}
-                            </div>
-                          </div>
-                          <div className="flex flex-col sm:flex-row gap-2">
-                            <Button size="sm" onClick={() => handleViewProgress(child)} className="w-full sm:w-auto">View Progress</Button>
-                            <Button size="sm" variant="outline" onClick={() => handleRequestTutor(child)} className="w-full sm:w-auto">Request Tutor</Button>
-                          </div>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <Button size="sm" onClick={() => openModal('progress', child)} className="text-xs">
+                            View Progress
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => openModal('book', child)} className="text-xs">
+                            Book Lesson
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => navigate('/find-tutors')} className="text-xs">
+                            Find Tutors
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -566,236 +456,80 @@ const ParentDashboard = () => {
               </div>
             )}
 
-            {activeTab === "tutors" && (
-              <div className="space-y-6">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Find Tutors</h1>
-                
-                {/* Search and Filters */}
-                <Card>
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="search" className="text-sm">Search Tutors</Label>
-                        <div className="relative">
-                          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                          <Input
-                            id="search"
-                            placeholder="Name or subject..."
-                            className="pl-10 text-sm"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm">Subject</Label>
-                        <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                          <SelectTrigger className="text-sm">
-                            <SelectValue placeholder="Select subject" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All Subjects</SelectItem>
-                            <SelectItem value="mathematics">Mathematics</SelectItem>
-                            <SelectItem value="english">English</SelectItem>
-                            <SelectItem value="science">Science</SelectItem>
-                            <SelectItem value="physics">Physics</SelectItem>
-                            <SelectItem value="chemistry">Chemistry</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm">Location</Label>
-                        <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                          <SelectTrigger className="text-sm">
-                            <SelectValue placeholder="Select location" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All Locations</SelectItem>
-                            <SelectItem value="accra">Accra</SelectItem>
-                            <SelectItem value="kumasi">Kumasi</SelectItem>
-                            <SelectItem value="tema">Tema</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="flex flex-col sm:flex-row items-end gap-2">
-                        <Button className="flex-1 w-full text-sm" onClick={() => console.log("Applied filters")}>
-                          <Filter className="h-4 w-4 mr-2" />
-                          Apply
-                        </Button>
-                        <Button variant="outline" onClick={clearFilters} className="w-full sm:w-auto text-sm">
-                          Clear
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {/* Filter Summary */}
-                    {(searchTerm || selectedSubject || selectedLocation) && (
-                      <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
-                          <span className="text-sm text-blue-800">
-                            Showing {filteredTutors.length} of {allTutors.length} tutors
-                          </span>
-                          <div className="flex flex-wrap gap-2">
-                            {searchTerm && (
-                              <Badge variant="secondary" className="text-xs">Search: {searchTerm}</Badge>
-                            )}
-                            {selectedSubject && selectedSubject !== "all" && (
-                              <Badge variant="secondary" className="text-xs">Subject: {selectedSubject}</Badge>
-                            )}
-                            {selectedLocation && selectedLocation !== "all" && (
-                              <Badge variant="secondary" className="text-xs">Location: {selectedLocation}</Badge>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                {/* Tutors Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                  {filteredTutors.map((tutor) => (
-                    <Card key={tutor.id} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex items-center space-x-4 mb-4">
-                          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                            <Users className="h-6 w-6 sm:h-8 sm:w-8 text-gray-500" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-base sm:text-lg">{tutor.name}</h3>
-                            <p className="text-xs sm:text-sm text-gray-600">{tutor.experience} experience</p>
-                          </div>
-                        </div>
-
-                        <div className="space-y-3">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Subjects</p>
-                            <div className="flex flex-wrap gap-1">
-                              {tutor.subjects.map((subject) => (
-                                <Badge key={subject} variant="outline" className="text-xs">
-                                  {subject}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center justify-between text-sm">
-                            <div className="flex items-center space-x-1">
-                              <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                              <span>{tutor.rating}</span>
-                              <span className="text-gray-500">({tutor.reviews} reviews)</span>
-                            </div>
-                            <Badge variant={tutor.availability === "Available" ? "default" : "secondary"} className="text-xs">
-                              {tutor.availability}
-                            </Badge>
-                          </div>
-
-                          <div className="flex items-center justify-between text-sm">
-                            <div className="flex items-center space-x-1">
-                              <MapPin className="h-4 w-4 text-gray-400" />
-                              <span>{tutor.location}</span>
-                            </div>
-                            <span className="font-semibold text-green-600">{tutor.rate}</span>
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row gap-2 pt-2">
-                            <Button size="sm" className="flex-1 text-xs" onClick={() => handleViewTutorProfile(tutor)}>
-                              View Profile
-                            </Button>
-                            <Button size="sm" variant="outline" className="flex-1 text-xs" onClick={() => handleBookTutorLesson(tutor)}>
-                              Book Lesson
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                {filteredTutors.length === 0 && (
-                  <Card>
-                    <CardContent className="p-6 sm:p-8 text-center">
-                      <p className="text-gray-500 mb-4">No tutors found matching your criteria.</p>
-                      <Button variant="outline" onClick={clearFilters}>
-                        Clear Filters
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            )}
-
-            {activeTab === "lessons" && (
-              <div className="space-y-6">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Lessons Schedule</h1>
+            {activeTab === "schedule" && (
+              <div className="space-y-4 sm:space-y-6">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Schedule</h1>
                 
                 <div className="grid gap-4 sm:gap-6">
-                  {[...todaysLessons, ...upcomingLessons].map((lesson) => (
-                    <Card key={lesson.id}>
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
-                          <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                              <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
-                            </div>
-                            <div>
-                              <div className="flex items-center space-x-2 mb-1">
-                                <h3 className="font-semibold text-base sm:text-lg">{lesson.subject}</h3>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg sm:text-xl">This Week's Lessons</CardTitle>
+                      <CardDescription className="text-sm">All scheduled lessons for the current week</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {[...todaysLessons, ...upcomingLessons].map((lesson) => (
+                          <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2 mb-2">
+                                <h3 className="font-semibold text-sm sm:text-base">{lesson.subject}</h3>
                                 <Badge variant="outline" className="text-xs">
                                   {lesson.location}
                                 </Badge>
                               </div>
-                              <p className="text-xs sm:text-sm text-gray-600">with {lesson.tutor}</p>
-                              <p className="text-xs sm:text-sm text-gray-500">Student: {lesson.student}</p>
+                              <p className="text-xs sm:text-sm text-gray-600">Child: {lesson.child}</p>
+                              <p className="text-xs sm:text-sm text-gray-600">Tutor: {lesson.tutor}</p>
+                              <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500 mt-1">
+                                <Clock className="h-4 w-4" />
+                                <span>{lesson.time}</span>
+                              </div>
+                            </div>
+                            <div className="flex gap-2 flex-wrap">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="text-xs flex-1 sm:flex-none"
+                                onClick={() => openModal('reschedule', null, lesson)}
+                              >
+                                Reschedule
+                              </Button>
                             </div>
                           </div>
-                          <div className="text-left sm:text-right">
-                            <div className="flex items-center text-xs sm:text-sm text-gray-600 mb-2">
-                              <Clock className="h-4 w-4 mr-1" />
-                              {lesson.time}
-                            </div>
-                            <Badge variant={lesson.status === "confirmed" ? "default" : "secondary"} className="text-xs mb-3 sm:mb-0">
-                              {lesson.status}
-                            </Badge>
-                          </div>
-                        </div>
-                        <div className="flex flex-col sm:flex-row justify-end mt-4 gap-2">
-                          <Button size="sm" variant="outline" onClick={() => handleRescheduleLesson(lesson)} className="w-full sm:w-auto text-xs">
-                            Reschedule
-                          </Button>
-                          <Button size="sm" onClick={() => handleStartLesson(lesson)} className="w-full sm:w-auto text-xs">
-                            Start Lesson
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
             )}
 
             {activeTab === "payments" && (
-              <div className="space-y-6">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Payment History</h1>
+              <div className="space-y-4 sm:space-y-6">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Payments</h1>
                 
-                {/* Payment Statistics */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                   <Card>
-                    <CardContent className="p-4 sm:p-6 text-center">
-                      <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">GHS 360</div>
-                      <div className="text-xs sm:text-sm text-gray-600">Paid This Month</div>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="text-center">
+                        <p className="text-xs sm:text-sm font-medium text-gray-600">This Month</p>
+                        <p className="text-xl sm:text-3xl font-bold text-blue-600">GHS 480</p>
+                      </div>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-4 sm:p-6 text-center">
-                      <div className="text-xl sm:text-2xl font-bold text-orange-600 mb-2">GHS 150</div>
-                      <div className="text-xs sm:text-sm text-gray-600">Pending Payment</div>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="text-center">
+                        <p className="text-xs sm:text-sm font-medium text-gray-600">Pending</p>
+                        <p className="text-xl sm:text-3xl font-bold text-yellow-600">GHS 120</p>
+                      </div>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-4 sm:p-6 text-center">
-                      <div className="text-xl sm:text-2xl font-bold text-green-600 mb-2">GHS 1,240</div>
-                      <div className="text-xs sm:text-sm text-gray-600">Total Paid</div>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="text-center">
+                        <p className="text-xs sm:text-sm font-medium text-gray-600">Total Paid</p>
+                        <p className="text-xl sm:text-3xl font-bold text-green-600">GHS 2,340</p>
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
@@ -803,49 +537,73 @@ const ParentDashboard = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg sm:text-xl">Recent Payments</CardTitle>
-                    <CardDescription>Your payment history and invoices</CardDescription>
+                    <CardDescription className="text-sm">Your payment history</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {payments.map((payment) => (
-                        <div key={payment.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg space-y-4 sm:space-y-0">
-                          <div className="flex items-center space-x-4">
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center">
-                              <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
-                            </div>
-                            <div>
-                              <h3 className="font-semibold text-sm sm:text-base">{payment.subject} Lesson</h3>
-                              <p className="text-xs sm:text-sm text-gray-600">with {payment.tutor}</p>
-                              <p className="text-xs sm:text-sm text-gray-500">{payment.date}</p>
-                            </div>
-                          </div>
-                          <div className="text-left sm:text-right">
-                            <div className="font-semibold text-base sm:text-lg">GHS {payment.amount}</div>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-2">
-                              <Badge variant={payment.status === "paid" ? "default" : "secondary"} className="text-xs w-fit">
-                                {payment.status === "paid" ? (
-                                  <><CheckCircle className="h-3 w-3 mr-1" /> Paid</>
-                                ) : (
-                                  <><Clock className="h-3 w-3 mr-1" /> Pending</>
-                                )}
-                              </Badge>
-                              <div className="flex flex-col sm:flex-row gap-2">
-                                {payment.status === "pending" && (
-                                  <Button size="sm" onClick={() => handleMakePayment(payment)} className="text-xs">
-                                    Pay Now
-                                  </Button>
-                                )}
-                                <Button size="sm" variant="outline" className="text-xs" onClick={() => handleViewInvoice(payment)}>
-                                  View Invoice
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
+                      <div className="flex justify-between items-center p-3 border rounded-lg">
+                        <div>
+                          <p className="font-semibold text-sm">Mathematics Lesson - Emma</p>
+                          <p className="text-xs text-gray-500">Dr. Kwame Asante • March 15, 2024</p>
                         </div>
-                      ))}
+                        <div className="text-right">
+                          <p className="font-semibold text-sm">GHS 60</p>
+                          <Badge variant="default" className="bg-green-600 text-xs">Paid</Badge>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center p-3 border rounded-lg">
+                        <div>
+                          <p className="font-semibold text-sm">Physics Lesson - James</p>
+                          <p className="text-xs text-gray-500">Prof. Sarah Mensah • March 14, 2024</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-sm">GHS 80</p>
+                          <Badge variant="outline" className="text-yellow-600 border-yellow-600 text-xs">Pending</Badge>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
+              </div>
+            )}
+
+            {activeTab === "profile" && (
+              <div className="space-y-4 sm:space-y-6">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Profile Settings</h1>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg sm:text-xl">Account Information</CardTitle>
+                    <CardDescription className="text-sm">Manage your account details</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium">Full Name</label>
+                        <p className="text-sm text-gray-600">Mrs. Johnson</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Email</label>
+                        <p className="text-sm text-gray-600">mrs.johnson@email.com</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Phone</label>
+                        <p className="text-sm text-gray-600">+233 24 123 4567</p>
+                      </div>
+                      <Button className="text-sm">Edit Profile</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* Other tabs would be implemented similarly */}
+            {!["overview", "children", "schedule", "payments", "profile"].includes(activeTab) && (
+              <div className="text-center py-12">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+                  {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Section
+                </h2>
+                <p className="text-gray-600 text-sm sm:text-base">This section is under development.</p>
               </div>
             )}
           </div>
@@ -853,78 +611,42 @@ const ParentDashboard = () => {
       </div>
 
       {/* Modals */}
-      {selectedChild && (
+      {modalType === 'progress' && selectedChild && (
         <StudentProgressModal
-          isOpen={showProgressModal}
-          onClose={() => setShowProgressModal(false)}
+          isOpen={true}
+          onClose={closeModal}
           student={selectedChild}
         />
       )}
 
-      {selectedChild && (
-        <RequestTutorModal
-          isOpen={showRequestModal}
-          onClose={() => setShowRequestModal(false)}
-          childName={selectedChild.name}
-        />
-      )}
-
-      <AddChildModal
-        isOpen={showAddChildModal}
-        onClose={() => setShowAddChildModal(false)}
-        onChildAdded={handleAddChild}
-      />
-
-      {selectedLesson && (
-        <RescheduleModal
-          isOpen={showRescheduleModal}
-          onClose={() => setShowRescheduleModal(false)}
-          lesson={selectedLesson}
-        />
-      )}
-
-      {selectedLesson && (
-        <JoinLessonModal
-          isOpen={showJoinLessonModal}
-          onClose={() => setShowJoinLessonModal(false)}
-          lesson={selectedLesson}
-        />
-      )}
-
-      {selectedPayment && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          payment={selectedPayment}
-        />
-      )}
-
-      {selectedTutor && (
-        <TutorProfileModal
-          isOpen={showTutorProfileModal}
-          onClose={() => setShowTutorProfileModal(false)}
-          tutor={selectedTutor}
-          onBookLesson={() => {
-            setShowTutorProfileModal(false);
-            setShowBookLessonModal(true);
-          }}
-        />
-      )}
-
-      {selectedTutor && (
+      {modalType === 'book' && (
         <BookLessonModal
-          isOpen={showBookLessonModal}
-          onClose={() => setShowBookLessonModal(false)}
-          tutorName={selectedTutor.name}
-          rate={selectedTutor.rate}
+          isOpen={true}
+          onClose={closeModal}
         />
       )}
 
-      {selectedInvoice && (
-        <InvoiceModal
-          isOpen={showInvoiceModal}
-          onClose={() => setShowInvoiceModal(false)}
-          payment={selectedInvoice}
+      {modalType === 'add-child' && (
+        <AddChildModal
+          isOpen={true}
+          onClose={closeModal}
+        />
+      )}
+
+      {modalType === 'payment' && (
+        <PaymentModal
+          isOpen={true}
+          onClose={closeModal}
+          amount={120}
+          description="Mathematics lesson payment"
+        />
+      )}
+
+      {modalType === 'reschedule' && selectedLesson && (
+        <RescheduleModal
+          isOpen={true}
+          onClose={closeModal}
+          lesson={selectedLesson}
         />
       )}
     </div>

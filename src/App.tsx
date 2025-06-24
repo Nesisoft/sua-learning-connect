@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import FindTutors from "./pages/FindTutors";
 import TutorProfile from "./pages/TutorProfile";
 import TutorSchedule from "./pages/TutorSchedule";
+import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/find-tutors" element={<FindTutors />} />
           <Route path="/tutor/profile" element={<TutorProfile />} />
           <Route path="/tutor/schedule" element={<TutorSchedule />} />
+          <Route path="/chat" element={<Chat />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

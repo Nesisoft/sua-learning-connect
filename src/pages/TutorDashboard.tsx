@@ -26,9 +26,15 @@ const TutorDashboard = () => {
     { id: 2, subject: "Physics", student: "Alex Mensah", location: "Virtual", startTime: "2:00 PM", status: "In Progress", duration: "60 mins" }
   ];
 
+  const todaysLessons = [
+    { id: 1, subject: "Mathematics", student: "Sarah Johnson", time: "Today, 4:00 PM", location: "Home Visit", address: "123 Elm Street, Accra" },
+    { id: 2, subject: "Physics", student: "Alex Mensah", time: "Today, 6:00 PM", location: "Virtual" }
+  ];
+
   const upcomingLessons = [
-    { id: 1, subject: "Mathematics", student: "Sarah Johnson", time: "Today, 4:00 PM", location: "Home Visit" },
-    { id: 2, subject: "Physics", student: "Alex Mensah", time: "Tomorrow, 10:00 AM", location: "Virtual" }
+    { id: 1, subject: "Mathematics", student: "Sarah Johnson", time: "Tomorrow, 10:00 AM", location: "Home Visit", address: "456 Oak Avenue, Kumasi" },
+    { id: 2, subject: "Physics", student: "Alex Mensah", time: "Wednesday, 2:00 PM", location: "Virtual" },
+    { id: 3, subject: "Chemistry", student: "Emma Ofori", time: "Thursday, 4:00 PM", location: "Home Visit", address: "789 Pine Street, Tamale" }
   ];
 
   const students = [
@@ -60,13 +66,33 @@ const TutorDashboard = () => {
     console.log("Starting lesson:", lesson);
     toast.success(`Starting ${lesson.subject} lesson with ${lesson.student}!`);
     
-    // Simulate lesson start - could redirect to lesson interface
     setTimeout(() => {
       if (lesson.location === "Virtual") {
         toast.info("Connecting to virtual classroom...");
       } else {
         toast.info("Navigate to student location for home visit");
       }
+    }, 1000);
+  };
+
+  const handleCallStudent = (lesson: any) => {
+    console.log("Calling student:", lesson);
+    toast.success(`Calling ${lesson.student}...`);
+    setTimeout(() => {
+      toast.info("Call connected successfully");
+    }, 1500);
+  };
+
+  const handleSendMessage = (lesson: any) => {
+    console.log("Opening chat with student:", lesson);
+    navigate('/chat', { state: { recipient: lesson.student, type: 'student' } });
+  };
+
+  const handleNavigateToLocation = (lesson: any) => {
+    console.log("Navigating to location:", lesson);
+    toast.success(`Opening navigation to ${lesson.student}'s location`);
+    setTimeout(() => {
+      toast.info("GPS navigation started");
     }, 1000);
   };
 
@@ -194,6 +220,14 @@ const TutorDashboard = () => {
                 <Settings className="h-4 w-4 mr-2" />
                 Profile
               </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-sm"
+                onClick={() => navigate('/chat')}
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Messages
+              </Button>
             </div>
           </div>
 
@@ -289,18 +323,11 @@ const TutorDashboard = () => {
                               )}
                             </div>
                             <div className="flex flex-col sm:flex-row gap-2">
-                              {lesson.location === "Virtual" ? (
-                                <Button size="sm" onClick={() => handleJoinOngoingLesson(lesson)} className="w-full sm:w-auto text-xs">
-                                  <Video className="h-4 w-4 mr-1" />
-                                  Join Now
-                                </Button>
-                              ) : (
-                                <Button size="sm" variant="outline" onClick={() => handleContactStudent(lesson)} className="w-full sm:w-auto text-xs">
-                                  <Phone className="h-4 w-4 mr-1" />
-                                  Call
-                                </Button>
-                              )}
-                              <Button size="sm" variant="outline" onClick={() => handleContactStudent(lesson)} className="w-full sm:w-auto text-xs">
+                              <Button size="sm" variant="outline" onClick={() => handleCallStudent(lesson)} className="w-full sm:w-auto text-xs">
+                                <Phone className="h-4 w-4 mr-1" />
+                                Call
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => handleSendMessage(lesson)} className="w-full sm:w-auto text-xs">
                                 <MessageSquare className="h-4 w-4 mr-1" />
                                 Message
                               </Button>
@@ -320,12 +347,13 @@ const TutorDashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {upcomingLessons.map((lesson) => (
+                      {todaysLessons.map((lesson) => (
                         <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0">
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-2">
                               <h3 className="font-semibold text-sm sm:text-base">{lesson.subject}</h3>
                               <Badge variant="outline" className="text-xs">
+                                {lesson.location === "Virtual" ? <Video className="h-3 w-3 mr-1" /> : <MapPinIcon className="h-3 w-3 mr-1" />}
                                 {lesson.location}
                               </Badge>
                             </div>
@@ -333,11 +361,10 @@ const TutorDashboard = () => {
                             <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500 mt-1">
                               <Clock className="h-4 w-4" />
                               <span>{lesson.time}</span>
-                              <span className="flex items-center">
-                                {lesson.location === "Virtual" ? <Video className="h-4 w-4 ml-2 mr-1" /> : <MapPinIcon className="h-4 w-4 ml-2 mr-1" />}
-                                {lesson.location}
-                              </span>
                             </div>
+                            {lesson.address && (
+                              <p className="text-xs text-gray-500 mt-1">Address: {lesson.address}</p>
+                            )}
                           </div>
                           <div className="flex gap-2 flex-wrap">
                             <Button 
@@ -354,6 +381,49 @@ const TutorDashboard = () => {
                               onClick={() => handleStartLesson(lesson)}
                             >
                               Start Lesson
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Upcoming Lessons */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg sm:text-xl">Upcoming Lessons</CardTitle>
+                    <CardDescription className="text-sm">Your scheduled lessons for the coming days</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {upcomingLessons.map((lesson) => (
+                        <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h3 className="font-semibold text-sm sm:text-base">{lesson.subject}</h3>
+                              <Badge variant="outline" className="text-xs">
+                                {lesson.location === "Virtual" ? <Video className="h-3 w-3 mr-1" /> : <MapPinIcon className="h-3 w-3 mr-1" />}
+                                {lesson.location}
+                              </Badge>
+                            </div>
+                            <p className="text-xs sm:text-sm text-gray-600">Student: {lesson.student}</p>
+                            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500 mt-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{lesson.time}</span>
+                            </div>
+                            {lesson.address && (
+                              <p className="text-xs text-gray-500 mt-1">Address: {lesson.address}</p>
+                            )}
+                          </div>
+                          <div className="flex gap-2 flex-wrap">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-xs flex-1 sm:flex-none"
+                              onClick={() => openModal('reschedule', null, lesson)}
+                            >
+                              Reschedule
                             </Button>
                           </div>
                         </div>
