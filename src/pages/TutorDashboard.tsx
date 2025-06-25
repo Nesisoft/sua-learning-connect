@@ -85,7 +85,17 @@ const TutorDashboard = () => {
 
   const handleSendMessage = (lesson: any) => {
     console.log("Opening chat with student:", lesson);
-    navigate('/chat', { state: { recipient: lesson.student, userType: 'tutor' } });
+    navigate('/conversation', { 
+      state: { 
+        userType: 'tutor',
+        contact: {
+          id: lesson.id,
+          name: lesson.student,
+          type: 'student',
+          subject: lesson.subject
+        }
+      } 
+    });
   };
 
   const handleNavigateToLocation = (lesson: any) => {
@@ -223,7 +233,7 @@ const TutorDashboard = () => {
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => navigate('/chat', { state: { userType: 'tutor' } })}
+                onClick={() => navigate('/messages', { state: { userType: 'tutor' } })}
               >
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Messages
@@ -272,9 +282,14 @@ const TutorDashboard = () => {
                         <p className="text-2xl font-bold text-orange-600">3</p>
                         <p className="text-sm text-orange-600">New Messages</p>
                       </div>
-                      <Link to="/messages" state={{ userType: "tutor" }}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigate('/messages', { state: { userType: 'tutor' } })}
+                        className="p-0"
+                      >
                         <MessageCircle className="h-8 w-8 text-orange-600 cursor-pointer hover:text-orange-700" />
-                      </Link>
+                      </Button>
                     </div>
                   </Card>
                 </div>

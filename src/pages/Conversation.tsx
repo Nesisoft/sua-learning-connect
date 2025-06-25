@@ -3,91 +3,108 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { 
   BookOpen, 
-  Send, 
-  Phone, 
-  Video, 
-  MoreVertical, 
   ArrowLeft,
+  LogOut,
+  Send,
+  Phone,
+  Video,
+  MoreVertical,
   Paperclip,
-  Smile,
-  LogOut
+  Smile
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 const Conversation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Get user type and contact from navigation state
   const userType = location.state?.userType || "tutor";
-  const contact = location.state?.contact;
+  const contact = location.state?.contact || {
+    id: 1,
+    name: "Unknown Contact",
+    type: "student",
+    subject: "General"
+  };
 
-  // Mock messages data specific to this conversation
+  // Mock messages data
   const [messages, setMessages] = useState([
     {
       id: 1,
-      senderId: contact?.id || 1,
-      senderName: contact?.name || "Contact",
-      content: "Hi! I wanted to thank you for today's lesson. The algebra concepts are much clearer now.",
-      timestamp: "10:30 AM",
-      type: "text"
+      sender: contact.name,
+      text: "Hello! I have a question about today's lesson.",
+      timestamp: "2:30 PM",
+      isCurrentUser: false
     },
     {
       id: 2,
-      senderId: "me",
-      senderName: "Me",
-      content: "I'm so glad to hear that! You're making excellent progress. Keep practicing those problems I gave you.",
-      timestamp: "10:32 AM",
-      type: "text"
+      sender: userType === "tutor" ? "Dr. Kwame Asante" : "Mrs. Johnson",
+      text: "Hi! I'm happy to help. What would you like to know?",
+      timestamp: "2:32 PM",
+      isCurrentUser: true
     },
     {
       id: 3,
-      senderId: contact?.id || 1,
-      senderName: contact?.name || "Contact",
-      content: "Will do! Can we go over quadratic equations in our next session?",
-      timestamp: "10:35 AM",
-      type: "text"
+      sender: contact.name,
+      text: "I'm having trouble understanding the quadratic equations we covered. Could you explain it again?",
+      timestamp: "2:35 PM",
+      isCurrentUser: false
     },
     {
       id: 4,
-      senderId: "me",
-      senderName: "Me",
-      content: "Absolutely! I'll prepare some examples for you. See you tomorrow at 4 PM.",
-      timestamp: "10:37 AM",
-      type: "text"
+      sender: userType === "tutor" ? "Dr. Kwame Asante" : "Mrs. Johnson",
+      text: "Of course! A quadratic equation is any equation that can be written in the form ax² + bx + c = 0. Let me break it down step by step for you.",
+      timestamp: "2:37 PM",
+      isCurrentUser: true
     }
   ]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const handleSendMessage = () => {
-    if (!message.trim()) return;
+    if (message.trim()) {
+      const newMessage = {
+        id: messages.length + 1,
+        sender: userType === "tutor" ? "Dr. Kwame Asante" : "Mrs. Johnson",
+        text: message,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isCurrentUser: true
+      };
+      setMessages([...messages, newMessage]);
+      setMessage("");
+      
+      // Simulate typing indicator
+      setIsTyping(true);
+      setTimeout(() => {
+        setIsTyping(false);
+        const response = {
+          id: messages.length + 2,
+          sender: contact.name,
+          text: "Thank you! That helps a lot. I'll practice more problems.",
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isCurrentUser: false
+        };
+        setMessages(prev => [...prev, response]);
+      }, 2000);
+    }
+  };
 
-    const newMessage = {
-      id: Date.now(),
-      senderId: "me",
-      senderName: "Me",
-      content: message.trim(),
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      type: "text"
-    };
-
-    setMessages(prev => [...prev, newMessage]);
-    setMessage("");
-    toast.success("Message sent!");
+  const handleBackClick = () => {
+    navigate('/messages', { state: { userType } });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -98,43 +115,20 @@ const Conversation = () => {
   };
 
   const handleCall = () => {
-    if (!contact) return;
-    toast.success(`Calling ${contact.name}...`);
-    setTimeout(() => {
-      toast.info("Call connected");
-    }, 1500);
+    console.log(`Calling ${contact.name}...`);
+    // Simulate call functionality
   };
 
   const handleVideoCall = () => {
-    if (!contact) return;
-    toast.success(`Starting video call with ${contact.name}...`);
-    setTimeout(() => {
-      toast.info("Video call connected");
-    }, 1500);
+    console.log(`Starting video call with ${contact.name}...`);
+    // Simulate video call functionality
   };
-
-  const handleBackClick = () => {
-    navigate("/messages", { state: { userType } });
-  };
-
-  if (!contact) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Contact not found</h3>
-          <Button onClick={handleBackClick}>
-            Back to Messages
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center space-x-2">
               <Button
@@ -152,7 +146,6 @@ const Conversation = () => {
               </Badge>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <span className="hidden sm:block text-gray-700 text-sm">Chat</span>
               <Link to="/login">
                 <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
                   <LogOut className="h-4 w-4 mr-1 sm:mr-2" />
@@ -164,71 +157,76 @@ const Conversation = () => {
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <Card className="h-[calc(100vh-8rem)]">
-          {/* Chat Header */}
-          <CardHeader className="pb-3 border-b">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="relative">
-                  <Avatar>
-                    <AvatarImage src={contact.avatar} />
-                    <AvatarFallback>
-                      {contact.name.split(' ').map((n: string) => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  {contact.online && (
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                  )}
-                </div>
-                <div>
-                  <h3 className="font-semibold">{contact.name}</h3>
-                  <p className="text-sm text-gray-600">
-                    {contact.online ? "Online" : "Last seen 2 hours ago"} • {contact.subject}
-                  </p>
-                </div>
-              </div>
+      {/* Chat Header */}
+      <div className="bg-white border-b px-4 py-3">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src="/placeholder.svg" />
+              <AvatarFallback>
+                {contact.name.split(' ').map((n: string) => n[0]).join('')}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h2 className="font-semibold text-gray-900">{contact.name}</h2>
               <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm" onClick={handleCall}>
-                  <Phone className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm" onClick={handleVideoCall}>
-                  <Video className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
+                <Badge variant="outline" className="text-xs">
+                  {contact.subject}
+                </Badge>
+                <span className="text-xs text-blue-600 font-medium">
+                  {contact.type === "tutor" ? "Tutor" : "Student"}
+                </span>
               </div>
             </div>
-          </CardHeader>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="sm" onClick={handleCall}>
+              <Phone className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleVideoCall}>
+              <Video className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
 
-          {/* Messages */}
-          <CardContent className="p-0 flex flex-col h-[calc(100vh-16rem)]">
+      {/* Messages Area */}
+      <div className="flex-1 max-w-4xl mx-auto w-full">
+        <Card className="h-full rounded-none border-0 border-x">
+          <CardContent className="p-0 h-full flex flex-col">
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`flex ${msg.senderId === "me" ? "justify-end" : "justify-start"}`}
+                    className={`flex ${msg.isCurrentUser ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
                       className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        msg.senderId === "me"
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 text-gray-900"
+                        msg.isCurrentUser
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-900'
                       }`}
                     >
-                      <p className="text-sm">{msg.content}</p>
-                      <p
-                        className={`text-xs mt-1 ${
-                          msg.senderId === "me" ? "text-blue-100" : "text-gray-500"
-                        }`}
-                      >
+                      <p className="text-sm">{msg.text}</p>
+                      <p className={`text-xs mt-1 ${
+                        msg.isCurrentUser ? 'text-blue-100' : 'text-gray-500'
+                      }`}>
                         {msg.timestamp}
                       </p>
                     </div>
                   </div>
                 ))}
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg">
+                      <p className="text-sm">Typing...</p>
+                    </div>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
             </ScrollArea>
@@ -239,23 +237,23 @@ const Conversation = () => {
                 <Button variant="ghost" size="sm">
                   <Paperclip className="h-4 w-4" />
                 </Button>
-                <div className="flex-1">
+                <div className="flex-1 relative">
                   <Input
                     placeholder="Type a message..."
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    className="border-0 focus-visible:ring-0 shadow-none"
+                    className="pr-10"
                   />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2"
+                  >
+                    <Smile className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Button variant="ghost" size="sm">
-                  <Smile className="h-4 w-4" />
-                </Button>
-                <Button 
-                  size="sm" 
-                  onClick={handleSendMessage}
-                  disabled={!message.trim()}
-                >
+                <Button onClick={handleSendMessage} disabled={!message.trim()}>
                   <Send className="h-4 w-4" />
                 </Button>
               </div>

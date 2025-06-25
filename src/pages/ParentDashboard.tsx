@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -76,9 +75,19 @@ const ParentDashboard = () => {
     }, 1500);
   };
 
-  const handleSendMessage = (tutor: any) => {
-    console.log("Opening chat with tutor:", tutor);
-    navigate('/chat', { state: { recipient: tutor.name, userType: 'parent' } });
+  const handleSendMessage = (lesson: any) => {
+    console.log("Opening chat with tutor:", lesson);
+    navigate('/conversation', { 
+      state: { 
+        userType: 'parent',
+        contact: {
+          id: lesson.id,
+          name: lesson.tutor,
+          type: 'tutor',
+          subject: lesson.subject
+        }
+      } 
+    });
   };
 
   const handleNavigateToLocation = (lesson: any) => {
@@ -188,7 +197,7 @@ const ParentDashboard = () => {
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => navigate('/chat', { state: { userType: 'parent' } })}
+                onClick={() => navigate('/messages', { state: { userType: 'parent' } })}
               >
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Messages
@@ -237,9 +246,14 @@ const ParentDashboard = () => {
                         <p className="text-2xl font-bold text-orange-600">2</p>
                         <p className="text-sm text-orange-600">New Messages</p>
                       </div>
-                      <Link to="/messages" state={{ userType: "parent" }}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigate('/messages', { state: { userType: 'parent' } })}
+                        className="p-0"
+                      >
                         <MessageCircle className="h-8 w-8 text-orange-600 cursor-pointer hover:text-orange-700" />
-                      </Link>
+                      </Button>
                     </div>
                   </Card>
                 </div>
